@@ -13,7 +13,6 @@ client.on("message", msg => {
 	const channel = msg.channel,
 		name = getCommand(msg.content, prefix),
 		cmd = self.commands[name];
-	console.log(cmd)
 	if(!cmd)return;
 	if(cmd.requiresGuild && !msg.guild)return channel.send("This command can only be used in guilds!");
 
@@ -32,6 +31,6 @@ client.on("message", msg => {
 .then(() => {
 	self.emit("set");
 	self.set = true;
-	console.log(self.commands)
+	
 	console.log("Pixy is online!");
 });
