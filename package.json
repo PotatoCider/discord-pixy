@@ -1,0 +1,20 @@
+{
+  "name": "pixy",
+  "version": "1.0.0",
+  "description": "Paragon Xenocide's custom bot.",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bufferutil": "^3.0.3",
+    "discord.js": "^11.3.0",
+    "erlpack": "^0.1.2",
+    "is-builtin-module": "^2.0.0",
+    "libsodium-wrappers": "^0.7.3",
+    "node-opus": "^0.2.7",
+    "uws": "^9.14.0"
+  }
+}
