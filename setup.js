@@ -1,5 +1,5 @@
 try {
-	const { prefix, token } = require("./config.json");
+	const { prefix, token } = require("./settings.json");
 	process.env.PREFIX = prefix;
 	process.env.TOKEN = token;
 } catch(e) {

@@ -1,6 +1,6 @@
 const 
-	[ _, { Client }, { EventEmitter }, { loadCommands }, { getCommand, processMsg } ]
-		= require("./util/loadModules.js")("./setup", "discord.js", "events", "commandLoading", "commandProcessing"),
+	[ _, { Client }, { EventEmitter }, { loadCommands }, { getCommand, processMsg }, errorHandler, { owners } ]
+		= require("./util/loadModules.js")("./setup", "discord.js", "events", "commandLoading", "commandProcessing", "error", "./config"),
 
 	client = new Client(),
 
@@ -8,7 +8,7 @@ const
 	prefix = self.prefix;
 
 client.on("message", msg => {
-	if(!msg.content.startsWith(prefix) || msg.author.bot || !self.set)return;
+	if(!msg.content.startsWith(prefix) || !owners.includes(msg.author.id) || msg.author.bot || !self.set)return;
 
 	const channel = msg.channel,
 		name = getCommand(msg.content, prefix),
@@ -16,14 +16,18 @@ client.on("message", msg => {
 	if(!cmd)return;
 	if(cmd.requiresGuild && !msg.guild)return channel.send("This command can only be used in guilds!");
 
-	msg.params = processMsg(msg.content, name, prefix);
-
-	Promise.resolve(cmd.run(msg)).then(out => {
+	Promise.resolve(cmd.run(msg, processMsg(msg.content, name, prefix))).then(out => {
 		if(out)channel.send(out, { split: true }).then(m => {
 			if(cmd.del)m.delete(cmd.del);
 		});
 	})
 })
+
+.on("guildMemberAdd", mem => {
+
+})
+
+.on("error", errorHandler)
 
 .login(process.env.TOKEN)
 .then(() => console.log("Login successful!"))
@@ -32,5 +36,8 @@ client.on("message", msg => {
 	self.emit("set");
 	self.set = true;
 	
-	console.log("Pixy is online!");
+	console.log("Pixt is online!");
 });
+
+process.on("unhandledRejection", errorHandler)
+	.on("uncaughtException", errorHandler);
