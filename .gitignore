@@ -2,7 +2,7 @@
 *_backup.js
 
 # Data + Info
-settings.json
+config.json
 
 # Run 
 start_bot.bat
