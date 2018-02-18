@@ -5,7 +5,7 @@ module.exports = class extends Command {
 		super({
 			name: "kick",
 			desc: "Kicks a guild member from a guild.",
-			usage: "<member> [reason]",
+			usage: "<@member> [reason]",
 			admin: true,
 			messageSplit: true,
 			self
@@ -21,6 +21,6 @@ module.exports = class extends Command {
 			if(!mem)throw "Invalid guild member.";
 			return mem.kick(reason);
 		})
-		.then(mem => "Sucessfully kicked " + mem.user + (reason ? ` due to **${ reason }**.` : "."));
+		.then(mem => "Sucessfully kicked " + mem + (reason ? ` due to **${ reason }**.` : "."));
 	}
 }

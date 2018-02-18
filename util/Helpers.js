@@ -1,16 +1,14 @@
 const { patterns } = require("./Constants");
 
-let self;
-
 module.exports = class Helpers {
-	constructor(s) {
-		self = s;
+	constructor(self) {
+		this.self = self;
 	}
 
 	fetchUser(id) {
 		id = this.resolveMention(id, "user") || id;
 		if(!id || isNaN(id))return Promise.resolve(null);
-		return self.client.fetchUser(id);
+		return this.self.client.fetchUser(id);
 	}
 
 	fetchMember(id, guild) {

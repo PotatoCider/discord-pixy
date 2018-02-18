@@ -26,11 +26,13 @@ module.exports = class Self extends EventEmitter {
 		this.client.self = this;
 
 		this.client
-		.on("error", errorHandler)
-		.login(process.env.TOKEN)
-		.then(() => console.log("Login successful."))
-		.then(() => this.loadCommands("commands", this))
-		.then(() => {
+		.on("warn", errorHandler)
+		.on("error", errorHandler);
+
+		Promise.all([
+			this.login(),
+			this.loadCommands("commands")	
+		]).then(() => {
 			this.emit("set");
 			this.set = true;
 			console.log("Pixy is online!");
@@ -55,13 +57,26 @@ module.exports = class Self extends EventEmitter {
 			});
 		}
 
-		return Promise.all(loading).then(() => console.log(`./${ path } loaded.`)).catch(errorHandler);
+		return Promise.all(loading).then(() => {
+			this.emit(`./${ path } load`);
+			console.log(`./${ path } loaded.`);
+		}).catch(errorHandler);
 	}
 
 	loadCommand(path, changed) {
 		if(changed)delete require.cache[require.resolve(path)];
 		try {
-			return new (require(path))(this).init;
+			const cmd = new (require(path))(this);
+			Promise.resolve(cmd.init).then(res => this.emit(cmd.name + ".js loaded", res));
+			return cmd.init;
 		} catch(e) { errorHandler(e); process.exit(); }
+	}
+
+	login() {
+		return this.client.login(process.env.TOKEN).then(() => {
+			this.logined = true;
+			this.emit("login");
+			console.log("Login successful.");
+		});
 	}
 }

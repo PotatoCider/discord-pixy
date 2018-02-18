@@ -1,13 +1,15 @@
 try {
-	const { prefix, token } = require("./config.json");
+	const { prefix, token, mongodb_path } = require("./config.json");
 	process.env.PREFIX = prefix;
 	process.env.TOKEN = token;
-} catch(e) {
-	
+	process.env.MONGODB_URI = mongodb_path;
+} catch(err) {
+	if(err.message !== "Cannot find module './config.json'")throw err;
 } finally {
-	const { TOKEN, PREFIX } = process.env;
-	if(!TOKEN)throw "Bot token is not specified in config.json or process.env!";
-	if(!PREFIX)throw "Bot prefix is not specified in config.json or process.env!";
+	const { TOKEN, PREFIX, MONGODB_URI } = process.env;
+	if(!TOKEN)throw new Error("Bot token is not specified.");
+	if(!PREFIX)throw new Error("Bot prefix is not specified.");
+	if(!MONGODB_URI)throw new Error("Mongo Database URL is not specified.");
 
 	return true;
 }
