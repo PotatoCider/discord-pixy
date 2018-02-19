@@ -23,7 +23,7 @@ module.exports = class extends Command {
 			if(!mem)return "Invalid guild member.";
 
 			return mem.addRole(role, reason).then(() => 
-				(role.new ? "" : "Created new role 'Muted'.\n\n") + 
+				(role.new ? "Created new role 'Muted'.\n\n" : "") + 
 				"Successfully muted " + mem + (reason ? `due to **${ reason }**.` : ".")
 			);
 		});
