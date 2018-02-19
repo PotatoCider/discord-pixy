@@ -9,7 +9,7 @@ try {
 	const { TOKEN, PREFIX, MONGODB_URI } = process.env;
 	if(!TOKEN)throw new Error("Bot token is not specified.");
 	if(!PREFIX)throw new Error("Bot prefix is not specified.");
-	if(!MONGODB_URI)throw new Error("Mongo Database URL is not specified.");
+	// if(!MONGODB_URI)throw new Error("Mongo Database URL is not specified.");
 
 	return true;
 }
