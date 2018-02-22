@@ -12,23 +12,23 @@ self.client.on("message", msg => {
 	if(!cmd)return;
 	if(cmd.requiresGuild && !msg.guild)return channel.send("This command can only be used in Paragon Xenocide.");
 
-	const params = content.slice(prefix.length + name.length).trim().split(/ +/g).join(" ");
+	const params = content.slice(prefix.length + name.length).trim().split(/ +/g);
 
-	Promise.resolve(cmd.run(msg, cmd.messageSplit ? params.split(" ") : params))
+	Promise.resolve(cmd.run(msg, cmd.messageSplit ? params : params.join(" ")))
 	.catch(err => {
 		if(typeof err === "string")return err && "**Error**: " + err;
 		if(err.content){
 			err.content = "**Error**: " + err.content;
 			return err;
 		}
-		throw err;
+		self.errorHandler(err);
 	})
 	.then(out => {
 		if(out)channel.send(out.content || out, Object.assign({ split: true }, out.options)).then(m => {
 			const del = out.del || cmd.del;
 			if(del)m.delete(del);
 		});
-	}).catch(self.errorHandler)
+	});
 })
 
 .on("guildMemberAdd", mem => {

@@ -1,8 +1,9 @@
 const { patterns } = require("./Constants");
+let self;
 
 module.exports = class Helpers {
-	constructor(self) {
-		this.self = self;
+	constructor(s) {
+		self = s;
 	}
 
 	fetchUser(id) {

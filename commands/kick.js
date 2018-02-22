@@ -21,6 +21,6 @@ module.exports = class extends Command {
 			if(!mem)throw "Invalid guild member.";
 			return mem.kick(reason);
 		})
-		.then(mem => "Sucessfully kicked " + mem + (reason ? ` due to **${ reason }**.` : "."));
+		.then(mem => `Successfully kicked ${ mem }${ reason ? ` due to **${ reason }**` : "" }.`);
 	}
 }

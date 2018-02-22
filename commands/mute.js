@@ -7,6 +7,7 @@ module.exports = class extends Command {
 			desc: "Prevents someone from sending anymore messages.",
 			usage: "<@member> [reason]",
 			admin: true,
+			requiresGuild: true,
 			messageSplit: true,
 			self
 		});
@@ -15,25 +16,30 @@ module.exports = class extends Command {
 	run(msg, params) {
 		const mention = params.shift(),
 			reason = params.join(" ");
-
 		return Promise.all([
 			this.getMutedRole(msg.guild),
 			this.helpers.fetchMember(mention, msg.guild)
 		]).then(([ role, mem ]) => {
 			if(!mem)return "Invalid guild member.";
+			if(mem.roles.find("name", "Muted") && this.channelHasRole(msg.channel, role))
+				throw "That member is already muted.";
 
 			return mem.addRole(role, reason).then(() => 
 				(role.new ? "Created new role 'Muted'.\n\n" : "") + 
-				"Successfully muted " + mem + (reason ? `due to **${ reason }**.` : ".")
+				`Successfully muted ${ mem }${ reason ? ` due to **${ reason }**`: "" }.`
 			);
 		});
+	}
+
+	channelHasRole(channel, role) {
+		return channel.permissionOverwrites.some(perm => perm.type === "role" && perm.id === role.id);
 	}
 
 	getMutedRole(guild) {
 		const role = guild.roles.find("name", "Muted"),
 			isSet = role && guild.channels.every(channel => 
 				channel.type !== "text" || 
-				channel.permissionOverwrites.some(perm => perm.type === "role" && perm.id === role.id)
+				this.channelHasRole(channel, role)
 			);
 		if(isSet)return role;
 		return guild.createRole({

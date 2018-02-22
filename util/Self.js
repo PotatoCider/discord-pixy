@@ -67,7 +67,7 @@ module.exports = class Self extends EventEmitter {
 		if(changed)delete require.cache[require.resolve(path)];
 		try {
 			const cmd = new (require(path))(this);
-			Promise.resolve(cmd.init).then(res => this.emit(cmd.name + ".js loaded", res));
+			Promise.resolve(cmd.init).then(res => this.emit(cmd.name + ".js loaded", cmd));
 			return cmd.init;
 		} catch(e) { errorHandler(e); process.exit(); }
 	}
