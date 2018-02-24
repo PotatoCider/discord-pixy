@@ -15,7 +15,7 @@ module.exports = class Self extends EventEmitter {
 		this.client = new Client();
 		this.guilds = this.commands = {};
 		this.prefix = process.env.PREFIX;
-		this.production = process.env.PRODUCTION === "TRUE";
+ 		this.production = process.env.PRODUCTION === "TRUE";
 		this.set = false;
 
 		this.Constants = Constants;
@@ -69,7 +69,10 @@ module.exports = class Self extends EventEmitter {
 			const cmd = new (require(path))(this);
 			Promise.resolve(cmd.init).then(res => this.emit(cmd.name + ".js loaded", cmd));
 			return cmd.init;
-		} catch(e) { errorHandler(e); process.exit(); }
+		} catch(e) {
+			errorHandler(e);
+			process.exit();
+		}
 	}
 
 	login() {

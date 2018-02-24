@@ -5,7 +5,7 @@ module.exports = class extends Command {
 		super({
 			name: "say",
 			desc: "Repeats what you said in a different channel.",
-			usage: "[text_channel] <message>",
+			usage: "[channel] <message>",
 			messageSplit: true,
 			admin: true,
 			self

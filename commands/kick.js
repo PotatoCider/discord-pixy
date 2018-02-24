@@ -14,7 +14,7 @@ module.exports = class extends Command {
 
 	run(msg, params) {
 		const mention = params.shift(),
-			reason = params.join();
+			reason = params.join(" ");
 
 		return this.helpers.fetchMember(mention, msg.guild)
 		.then(mem => {
