@@ -42,6 +42,7 @@ module.exports = class extends Command {
 				this.channelHasRole(channel, role)
 			);
 		if(isSet)return role;
+		if(role)role.delete();
 		return guild.createRole({
 			name: "Muted",
 			color: "DARK_GREY",
