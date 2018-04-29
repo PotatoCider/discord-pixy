@@ -24,10 +24,12 @@ module.exports = class extends Command {
 			if(mem.roles.find("name", "Muted") && this.channelHasRole(msg.channel, role))
 				throw "That member is already muted.";
 
-			return mem.addRole(role, reason).then(() => 
-				(role.new ? "Created new role 'Muted'.\n\n" : "") + 
-				`Successfully muted ${ mem }${ reason ? ` due to **${ reason }**`: "" }.`
-			);
+			return mem.addRole(role, reason).then(() => {
+				const isNew = role.new;
+				role.new = false;
+				return (isNew ? "Created new role 'Muted'.\n\n" : "") + 
+				`Successfully muted ${ mem }${ reason ? ` due to **${ reason }**`: "" }.`;
+			});
 		});
 	}
 
