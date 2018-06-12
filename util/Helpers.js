@@ -1,4 +1,4 @@
-const { patterns } = require("./Constants");
+const Constants = require("./Constants");
 let self;
 
 module.exports = class Helpers {
@@ -17,7 +17,7 @@ module.exports = class Helpers {
 	}
 
 	resolveMention(mention, type) {
-		const pattern = patterns[type];
+		const pattern = Constants.patterns[type];
 		if(!pattern)throw new Error("Invalid pattern type.");
 		const match = mention.match(pattern);
 		return match && match[1];
@@ -30,5 +30,10 @@ module.exports = class Helpers {
 			if(err instanceof Error)throw err;
 			return null;
 		});
+	}
+
+	isAdmin(user) {
+		if(typeof user !== "string")user = user.id;
+		return Constants.owners.includes(user);
 	}
 }

@@ -5,13 +5,13 @@ module.exports = class extends Command {
 		super({
 			name: "ping",
 			desc: "Time taken for a message to travel round-trip.",
-			self: self
+			self
 		});
 	}
 
-	run(msg) {
+	run(msg, params, reply) {
 		const start = Date.now();
-		msg.channel.send("Pong!").then(m => {
+		reply.append("Pong!").send().then(m => {
 			const elapsed = Date.now() - start;
 			m.edit(`Pong! Latency is \`${ elapsed }ms\`, API Latency is \`${ Math.round(m.client.ping) }ms\`.`)
 		});

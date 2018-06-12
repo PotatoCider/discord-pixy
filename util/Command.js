@@ -29,9 +29,18 @@ module.exports = class Command {
 		}
 
 		if(!utils)return;
+		let utilNames;
+		if(!(utils instanceof Array)) {
+			utilNames = Object.keys(utils);
+			utils = Object.values(utils);
+		} else {
+			if(!utils.length)return;
+			utilNames = utils;
+		}
+
 		const modules = self.loadModules(...utils);
 		for(let i = 0; i < utils.length; i++){
-			this.utils[utils[i]] = modules[i];
+			this.utils[utilNames[i]] = modules[i];
 		}
 	}
 

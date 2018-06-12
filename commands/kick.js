@@ -12,15 +12,17 @@ module.exports = class extends Command {
 		});
 	}
 
-	run(msg, params) {
+	run(msg, params, reply) {
 		const mention = params.shift(),
 			reason = params.join(" ");
 
 		return this.helpers.fetchMember(mention, msg.guild)
 		.then(mem => {
-			if(!mem)throw "Invalid guild member.";
+			if(!mem)reply.throw("Invalid guild member.");
+
+			reply.append(`Successfully kicked ${ mem }${ reason ? ` due to **${ reason }**` : "" }.`);
+
 			return mem.kick(reason);
 		})
-		.then(mem => `Successfully kicked ${ mem }${ reason ? ` due to **${ reason }**` : "" }.`);
 	}
 }

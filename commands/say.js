@@ -12,13 +12,13 @@ module.exports = class extends Command {
 		});
 	}
 
-	run(msg, params) {
+	run(msg, params, reply) {
 		const channelId = this.helpers.resolveMention(params[0], "channel");
 		if(channelId){
-			if(!msg.guild)throw "This feature only works in Paragon Xenocide!";
+			if(!msg.guild)reply.throw("This feature only works in Paragon Xenocide!");
 			params.shift();
+			reply.channel = msg.guild.channels.get(channelId);
 		}
-
-		(channelId ? msg.guild.channels.get(channelId) : msg.channel).send(params.join(" "));
+		reply.append(params.join(" ")).send();		
 	}
 }

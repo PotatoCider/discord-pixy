@@ -13,22 +13,21 @@ module.exports = class extends Command {
 		});
 	}
 
-	run(msg, params) {
+	run(msg, params, reply) {
 		const mention = params.shift(),
 			reason = params.join(" ");
 		return Promise.all([
 			this.getMutedRole(msg.guild),
 			this.helpers.fetchMember(mention, msg.guild)
 		]).then(([ role, mem ]) => {
-			if(!mem)return "Invalid guild member.";
+			if(!mem)reply.throw("Invalid guild member.");
+
 			if(mem.roles.find("name", "Muted") && this.channelHasRole(msg.channel, role))
-				throw "That member is already muted.";
+				reply.throw("That member is already muted.");
 
 			return mem.addRole(role, reason).then(() => {
-				const isNew = role.new;
-				role.new = false;
-				return (isNew ? "Created new role 'Muted'.\n\n" : "") + 
-				`Successfully muted ${ mem }${ reason ? ` due to **${ reason }**`: "" }.`;
+				if(role.new)reply.append("Created new role 'Muted'.");
+				reply.append(`Successfully muted ${ mem }${ reason ? ` due to **${ reason }**`: "" }.`);
 			});
 		});
 	}

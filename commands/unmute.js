@@ -13,17 +13,19 @@ module.exports = class extends Command {
 		});
 	}
 
-	run(msg, params) {
+	run(msg, params, reply) {
 		const mention = params.shift(),
 			reason = params.join(" ");
 
 		return this.helpers.fetchMember(mention, msg.guild).then(mem => {
-			if(!mem)throw "Invalid guild member.";
+			if(!mem)reply.throw("Invalid guild member.");
 
 			const roles = mem.roles.filterArray(role => role.name.toLowerCase().includes("mute"));
-			if(!roles.length)throw "Member is not muted!";
+			if(!roles.length)reply.throw("Member is not muted!");
 
-			return roles.length === 1 ? mem.removeRole(roles[0], reason) : mem.removeRoles(roles, reason);
-		}).then(mem => `Successfully unmuted ${ mem }${ reason ? ` due to **${ reason }**` : "" }.`)
+			reply.append(`Successfully unmuted ${ mem }${ reason ? ` due to **${ reason }**` : "" }.`);
+
+			return mem.removeRoles(roles, reason)
+		})
 	}
 }

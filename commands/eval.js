@@ -1,5 +1,4 @@
 const Command = require("../util/Command");
-
 module.exports = class extends Command {
 	constructor(self) {
 		super({
@@ -12,11 +11,14 @@ module.exports = class extends Command {
 		});
 	}
 
-	run(msg, params) {
+	run(msg, params, reply) {
+		if(!this.Constants.owners.includes(msg.author))return;
 		if(params === "clear")return new Promise(resolve => this.utils.fs.writeFile("log.txt", "", err => {
 			if(err)throw err;
 			resolve("Error log cleared.");
 		}));
-		return eval(params);
+			
+		const client = msg.client, self = client.self;
+		reply.append(eval(params));
 	}
 }
