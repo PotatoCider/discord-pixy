@@ -18,23 +18,25 @@ module.exports = class Message {
 		return this;
 	}
 
-	send(channel) {
+	async send(channel) {
 		this.channel = channel || this.channel;
 		if(!this.channel)throw new Error("No channel specified.");
-		return this.sent = this.channel.send(this.content, this.options).then(msg => {
-			if(!isNaN(this.del))msg.delete(this.del);
-			this.next = new Message(this.channel);
-			msg.from = this;
-			return this.sent = msg;
-		})
+		this.sent = true;
+		const msg = await this.channel.send(this.content, this.options);
+
+		if(!isNaN(this.del))msg.delete(this.del);
+		this.next = new Message(this.channel);
+		this.next.prev = msg.from = this;
+		return this.sent = msg;
 	}
 
-	await(filter, time, del) {
+	async await(filter, time, del = false, inMs = false) {
+		if(!time)throw new Error("Argument Error: time");
 		if(!this.sent)this.send();
-		const next = this.channel.createMessageCollector(filter, { time }).next;
-		if(del)Promise.all([this.sent, next]).then(([sent]) => sent.delete());
-
-		return next;
+		if(!inMs)time *= 1000;
+		const msg = await this.channel.createMessageCollector(filter, { time }).next;
+		if(del || typeof del === "number")Promise.resolve(this.sent).then(sent => sent.delete(typeof del === "number" ? del : 0));
+		return msg;
 	}
 
 	delete(t, inMs) {

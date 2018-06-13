@@ -1,5 +1,5 @@
 const Command = require("../util/Command");
-module.exports = class extends Command {
+module.exports = class Eval extends Command {
 	constructor(self) {
 		super({
 			name: "eval",
@@ -11,7 +11,7 @@ module.exports = class extends Command {
 		});
 	}
 
-	run(msg, params, reply) {
+	async run(msg, params, reply) {
 		if(!this.Constants.owners.includes(msg.author))return;
 		if(params === "clear")return new Promise(resolve => this.utils.fs.writeFile("log.txt", "", err => {
 			if(err)throw err;

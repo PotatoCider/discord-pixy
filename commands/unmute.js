@@ -1,11 +1,11 @@
 const Command = require("../util/Command");
 
-module.exports = class extends Command {
+module.exports = class Unmute extends Command {
 	constructor(self) {
 		super({
 			name: "unmute",
-			desc: "Unmutes a guild member.",
-			usage: "<@member> [reason]",
+			desc: `Reverses the effect of ${ self.prefix }mute.`,
+			usage: "<@member/all> [reason]",
 			admin: true,
 			requiresGuild: true,
 			messageSplit: true,
@@ -13,19 +13,26 @@ module.exports = class extends Command {
 		});
 	}
 
-	run(msg, params, reply) {
+	async run(msg, params, reply) {
 		const mention = params.shift(),
+			all = mention === "all",
 			reason = params.join(" ");
+		let muted = all ? [] : [ await this.helpers.fetchMember(mention, msg.guild) ];
 
-		return this.helpers.fetchMember(mention, msg.guild).then(mem => {
-			if(!mem)reply.throw("Invalid guild member.");
+		// Built-in check for no one muted.
+		if(all)muted = await this.self.commands.whois.muted(msg.guild, reply, true);
 
-			const roles = mem.roles.filterArray(role => role.name.toLowerCase().includes("mute"));
-			if(!roles.length)reply.throw("Member is not muted!");
+		if(muted.length === 0)reply.throw("Invalid guild member.");
 
-			reply.append(`Successfully unmuted ${ mem }${ reason ? ` due to **${ reason }**` : "" }.`);
+		const pending = [];
+		for(let i = 0; i < muted.length; i++) {
+			const roles = muted[i].roles.filterArray(role => role.name.toLowerCase().includes("mute"));
+			if(!all && roles.length === 0)reply.throw("Member is not muted!");
 
-			return mem.removeRoles(roles, reason)
-		})
+			pending[i] = muted[i].removeRoles(roles, reason);
+		}
+		await Promise.all(pending);
+
+		reply.append(`Successfully unmuted ${ all ? "everyone" : muted[0] }${ reason ? ` due to **${ reason }**` : "" }.`);
 	}
 }

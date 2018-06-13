@@ -1,6 +1,6 @@
 const Command = require("../util/Command");
 
-module.exports = class extends Command {
+module.exports = class Mute extends Command {
 	constructor(self) {
 		super({
 			name: "mute",
@@ -13,30 +13,28 @@ module.exports = class extends Command {
 		});
 	}
 
-	run(msg, params, reply) {
+	async run(msg, params, reply) {
 		const mention = params.shift(),
-			reason = params.join(" ");
-		return Promise.all([
-			this.getMutedRole(msg.guild),
-			this.helpers.fetchMember(mention, msg.guild)
-		]).then(([ role, mem ]) => {
-			if(!mem)reply.throw("Invalid guild member.");
+			reason = params.join(" "),
+			[role, member] = await Promise.all([
+				this.getMutedRole(msg.guild, reply),
+				this.helpers.fetchMember(mention, msg.guild)
+			]);
+		if(!member)reply.throw("Invalid guild member.");
 
-			if(mem.roles.find("name", "Muted") && this.channelHasRole(msg.channel, role))
-				reply.throw("That member is already muted.");
+		if(member.roles.find("name", "Muted") && this.channelHasRole(msg.channel, role))
+			reply.throw("That member is already muted.");
 
-			return mem.addRole(role, reason).then(() => {
-				if(role.new)reply.append("Created new role 'Muted'.");
-				reply.append(`Successfully muted ${ mem }${ reason ? ` due to **${ reason }**`: "" }.`);
-			});
-		});
+		await member.addRole(role, reason);
+
+		reply.append(`Successfully muted ${ member }${ reason ? ` due to **${ reason }**`: "" }.`);
 	}
 
 	channelHasRole(channel, role) {
 		return channel.permissionOverwrites.some(perm => perm.type === "role" && perm.id === role.id);
 	}
 
-	getMutedRole(guild) {
+	async getMutedRole(guild) {
 		const role = guild.roles.find("name", "Muted"),
 			isSet = role && guild.channels.every(channel => 
 				channel.type !== "text" || 
@@ -44,21 +42,23 @@ module.exports = class extends Command {
 			);
 		if(isSet)return role;
 		if(role)role.delete();
-		return guild.createRole({
+		const newRole = await guild.createRole({
 			name: "Muted",
 			color: "DARK_GREY",
 			hoist: false,
 			mentionable: true,
 			permissions: ["VIEW_CHANNEL"]
-		}, `enable ${ this.self.prefix }mute`).then(role => {
-			const channels = guild.channels.values(),
-				loading = [];
-			for(const channel of channels) {
-				if(channel.type === "text")
-					loading.push(channel.overwritePermissions(role, { SEND_MESSAGES: false }, `enable ${ this.self.prefix }mute`));
-			}
-			role.new = true;
-			return Promise.all(loading).then(() => role);
-		});
+		}, `enable ${ this.self.prefix }mute`)
+
+		const channels = guild.channels.array(),
+			pending = [];
+		for(let i = 0; i < channels.length; i++) {
+			if(channels[i].type === "text")
+				pending.push(channels[i].overwritePermissions(newRole, { SEND_MESSAGES: false }, `enable ${ this.self.prefix }mute`));
+		}
+		await Promise.all(pending);
+		
+		reply.append("Created new role 'Muted'.");
+		return newRole;
 	}
 }

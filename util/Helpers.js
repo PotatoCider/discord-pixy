@@ -12,8 +12,10 @@ module.exports = class Helpers {
 		return self.client.fetchUser(id);
 	}
 
-	fetchMember(id, guild) {
-		return this.fetchUser(id).then(user => user && guild.fetchMember(user))
+	async fetchMember(id, guild) {
+		const user = await this.fetchUser(id);
+		if(user)return guild.fetchMember(user);
+		return null;
 	}
 
 	resolveMention(mention, type) {

@@ -40,7 +40,7 @@ module.exports = class Self extends EventEmitter {
 
 	}
 	
-	loadCommands(path, reload) {
+	async loadCommands(path, reload) {
 		const cmds = this._cmds = this._cmds || fs.readdirSync(path).filter(cmd => cmd.endsWith(".js")),
 			loading = [];
 		for(let i = 0; i < cmds.length; i++){
@@ -56,30 +56,29 @@ module.exports = class Self extends EventEmitter {
 				fsTimeout = setTimeout(() => fsTimeout = false, 1000); // Prevents multiple event calls within 1 second.
 			});
 		}
+		await Promise.all(loading).catch(errorHandler);
 
-		return Promise.all(loading).then(() => {
-			this.emit(`./${ path } load`);
-			console.log(`./${ path } loaded.`);
-		}).catch(errorHandler);
+		this.emit(`./${ path } load`);
+		console.log(`./${ path } loaded.`);
 	}
 
-	loadCommand(path, changed) {
+	async loadCommand(path, changed) {
 		if(changed)delete require.cache[require.resolve(path)];
 		try {
 			const cmd = new (require(path))(this);
-			Promise.resolve(cmd.init).then(res => this.emit(cmd.name + ".js loaded", cmd));
-			return cmd.init;
+			await cmd.init;
+			this.emit(cmd.name + ".js load", cmd);
 		} catch(e) {
 			errorHandler(e);
 			process.exit();
 		}
 	}
 
-	login() {
-		return this.client.login(process.env.TOKEN).then(() => {
-			this.logined = true;
-			this.emit("login");
-			console.log("Login successful.");
-		});
+	async login() {
+		await this.client.login(process.env.TOKEN);
+		
+		this.logined = true;
+		this.emit("login");
+		console.log("Login successful.");
 	}
 }

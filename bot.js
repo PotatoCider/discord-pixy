@@ -3,7 +3,7 @@ const Self = require("./util/Self"),
 	self = new Self(),
 	prefix = self.prefix;
 
-self.client.on("message", msg => {
+self.client.on("message", async msg => {
 	if(!msg.content.startsWith(prefix) || msg.author.bot || !self.set)return;
 
 	const channel = msg.channel,
@@ -17,19 +17,18 @@ self.client.on("message", msg => {
 	const params = content.slice(prefix.length + name.length).trim().split(/ +/g);
 	let reply = new Message(channel, "", cmd.del);
 
-	Promise.resolve(cmd.run(msg, cmd.messageSplit ? params : params.join(" "), reply))
+	const out = cmd.run(msg, cmd.messageSplit ? params : params.join(" "), reply)
 	.catch(err => {
 		if(err instanceof Message)return err;
 		self.errorHandler(err);
-	})
-	.then(out => {
-		if(typeof out === "string")return console.warn("Deprecated: return msg.content.");
-		if(out instanceof Message && !out.sent)return out.send();
-		while(reply) {
-			if(!reply.sent && reply.content)reply.send();
-			reply = reply.next;
-		}
 	});
+	
+	if(typeof out === "string")return console.warn("Deprecated: return msg.content.");
+	if(out instanceof Message && !out.sent)return out.send();
+	while(reply) {
+		if(!reply.sent && reply.content)reply.send();
+		reply = reply.next;
+	}
 })
 
 .on("guildMemberAdd", mem => {

@@ -1,6 +1,6 @@
 const Command = require("../util/Command")
 
-module.exports = class extends Command {
+module.exports = class Ban extends Command {
 	constructor(self) {
 		super({
 			name: "ban",
@@ -12,17 +12,14 @@ module.exports = class extends Command {
 		});
 	}
 
-	run(msg, params, reply) {
+	async run(msg, params, reply) {
 		const mention = params.shift(),
-			reason = params.join(" ");
+			reason = params.join(" "),
+			member = await this.helpers.fetchMember(mention, msg.guild);
+		if(!member)reply.throw("Invalid guild member.");
 
-		return this.helpers.fetchMember(mention, msg.guild)
-		.then(mem => {
-			if(!mem)reply.throw("Invalid guild member.");
+		await member.ban(reason);
 
-			reply.append(`Successfully banned ${ mem }${ reason ? ` due to **${ reason }**` : "" }.`);
-
-			return mem.ban(reason);
-		})
+		reply.append(`Successfully banned ${ member }${ reason ? ` due to **${ reason }**` : "" }.`);
 	}
 }
