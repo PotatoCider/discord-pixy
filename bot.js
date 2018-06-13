@@ -17,7 +17,7 @@ self.client.on("message", async msg => {
 	const params = content.slice(prefix.length + name.length).trim().split(/ +/g);
 	let reply = new Message(channel, "", cmd.del);
 
-	const out = cmd.run(msg, cmd.messageSplit ? params : params.join(" "), reply)
+	const out = await cmd.run(msg, cmd.messageSplit ? params : params.join(" "), reply)
 	.catch(err => {
 		if(err instanceof Message)return err;
 		self.errorHandler(err);
