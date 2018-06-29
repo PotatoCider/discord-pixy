@@ -12,7 +12,7 @@ module.exports = class Eval extends Command {
 	}
 
 	async run(msg, params, reply) {
-		if(!this.Constants.owners.includes(msg.author))return;
+		if(!this.Constants.owners.includes(msg.author.id))return;
 		if(params === "clear")return new Promise(resolve => this.utils.fs.writeFile("log.txt", "", err => {
 			if(err)throw err;
 			resolve("Error log cleared.");

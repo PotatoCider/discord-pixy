@@ -34,7 +34,7 @@ module.exports = class Mute extends Command {
 		return channel.permissionOverwrites.some(perm => perm.type === "role" && perm.id === role.id);
 	}
 
-	async getMutedRole(guild) {
+	async getMutedRole(guild, reply) {
 		const role = guild.roles.find("name", "Muted"),
 			isSet = role && guild.channels.every(channel => 
 				channel.type !== "text" || 
