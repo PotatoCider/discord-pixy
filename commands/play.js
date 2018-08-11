@@ -13,7 +13,7 @@ module.exports = class Play extends Command {
 		});
 	}
 
-	async run(msg, query, reply) {
+	async run(msg, query, reply) { // Fix queue and nowplaying notifier issue.
 		const vc = msg.member.voiceChannel;
 		if(!vc)reply.throw("Please join a voice channel!");
 		if(!query)reply.throw("Please specify a video name!");
@@ -22,7 +22,7 @@ module.exports = class Play extends Command {
 
 		let selected;
 		if(!this.utils.ytdl.validateURL(query)) {
-			const results = await this.utils.youtube.searchInfo(query, { maxResults: 10 });
+			const results = await this.utils.youtube.searchInfo(query, { maxResults: 5 });
 
 			for(let i = 0; i < results.length; i++) {
 				results[i].duration = this.helpers.resolveDuration({ iso: results[i].duration, yt: true });
@@ -39,7 +39,12 @@ module.exports = class Play extends Command {
 	}
 
 	async selection(items, msg, reply) {
-		reply.setEmbed({ title: `Reply with a song number "1-${ items.length }". Reply "cancel" to cancel selection.`, author: msg.member, thumbnail: this.Constants.images.musicnote, footer: "Selection timeout in 30 seconds." }).setList();
+		reply.setEmbed({
+			title: `Reply with a song number "1-${ items.length }". Reply "cancel" to cancel selection.`,
+			author: msg.member,
+			thumbnail: this.Constants.images.musicnote,
+			footer: "Selection timeout in 30 seconds."
+		}).setList();
 
 		for(let i = 0; i < items.length; i++) {
 			const { title, id, duration } = items[i];

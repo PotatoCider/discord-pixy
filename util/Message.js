@@ -12,14 +12,14 @@ module.exports = class Message {
 		if(list)this.setList();
 	}
 
-	append(texts, delimiter = true, embed = true) {
+	append(texts, delimiter = true, list = true, embed = true) {
 		if(!(texts instanceof Array))texts = [texts];
 		let toAppend = "";
 
 		if((this.content || (this.embed && this.embed.description)) && delimiter && !this.disablePrefix)
 			toAppend += this.delimiter;
 
-		if(this.list)toAppend += this.list.next();
+		if(this.list && list)toAppend += this.list.next();
 		toAppend += texts.join(this.delimiter);
 
 		if(this.embed && embed) {
@@ -98,7 +98,7 @@ module.exports = class Message {
 		return this;
 	}
 
-	setEmbed({ file, author, color = "RANDOM", desc, footer, image, thumbnail, timestamp = true, title, url } = {}, delimiter = "\n") {
+	setEmbed({ file, author, color = "RANDOM", description, footer, image, thumbnail, timestamp = true, title, url } = {}, delimiter = "\n") {
 		if(author instanceof Discord.GuildMember) {
 			const user = { name: author.displayName, icon: author.user.displayAvatarURL };
 			author = user;
@@ -112,7 +112,7 @@ module.exports = class Message {
 		.attachFile(file)
 		.setAuthor(author.name, author.icon, author.url)
 		.setColor(color)
-		.setDescription(desc || "")
+		.setDescription(description || "")
 		.setFooter(footer.text || "", footer.icon)
 		.setImage(image)
 		.setThumbnail(thumbnail)

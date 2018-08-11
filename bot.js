@@ -27,7 +27,7 @@ self.client.on("message", async msg => {
 	if(typeof out === "string")return console.warn("Deprecated: return msg.content.");
 	if(out instanceof Message && !out.sent)return out.send();
 	while(reply) {
-		if(!reply.sent && reply.content)reply.send();
+		if(!reply.sent && (reply.content || reply.embed))reply.send();
 		reply = reply.next;
 	}
 })
