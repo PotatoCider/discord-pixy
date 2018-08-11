@@ -31,7 +31,7 @@ module.exports = class MusicPlayer extends Array {
 		this.stream = ytdl(url, { filter: "audioonly" });
 		this.dispatcher = this.connection.playStream(this.stream);
 		this.dispatcher.once("end", () => {
-			this.stream = this.dispatcher = null;
+			this.stream = this.dispatcher = this.connection = null;
 			this.vc.leave();
 		});
 	}
