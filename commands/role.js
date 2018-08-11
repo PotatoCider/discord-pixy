@@ -5,6 +5,7 @@ module.exports = class Role extends Command {
 		super({
 			name: "role",
 			desc: "Assigns a free role to yourself, admins can assign roles to other members.",
+			detailed: "Assigns a free role to yourself, admins can assign roles to other members. Reason can be included (Audit Logs).",
 			usage: "[@member] <@?role1> | [reason]",
 			requiresGuild: true,
 			messageSplit: true,

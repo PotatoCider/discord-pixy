@@ -1,4 +1,5 @@
-const fs = require("fs");
+const fs = require("fs"),
+	util = require("util");
 
 module.exports = err => {
 	if(!err ||
@@ -8,6 +9,6 @@ module.exports = err => {
 	)return;
 	
 	if(process.env.PRODUCTION === "TRUE")return console.log(err);
-	fs.appendFileSync("log.txt", `${ err || err.stack }\nMessage: ${ err.message }\nCode: ${ err.code }\nDate: ${ Date() }\n\n`);
+	fs.appendFileSync("log.txt", `${ util.inspect(err || err.stack) }\nMessage: ${ err.message }\nCode: ${ err.code }\nDate: ${ Date() }\n\n`);
 	console.log("log updated");
 }

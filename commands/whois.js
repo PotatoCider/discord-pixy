@@ -8,6 +8,7 @@ module.exports = class Whois extends Command {
 			usage: "[muted/banned/@member]",
 			requiresGuild: true,
 			messageSplit: true,
+			admin: true,
 			utils: ["hastebin"],
 			self
 		});
@@ -19,7 +20,7 @@ module.exports = class Whois extends Command {
 		if(query === "muted")return this.muted(msg.guild, reply);
 		if(query === "banned")return this.banned(msg.guild, reply);
 
-		const member = member ? await this.helpers.fetchMember(query, msg.guild) : msg.member;
+		const member = query ? await this.helpers.fetchMember(query, msg.guild) : msg.member;
 		reply.throw("Still work in progress");
 	}
 

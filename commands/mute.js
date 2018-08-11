@@ -5,6 +5,7 @@ module.exports = class Mute extends Command {
 		super({
 			name: "mute",
 			desc: "Prevents someone from sending anymore messages.",
+			detailed: "Prevents someone from sending anymore messages. Reason can be included (Audit Logs).",
 			usage: "<@member> [reason]",
 			admin: true,
 			requiresGuild: true,

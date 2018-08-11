@@ -5,6 +5,7 @@ module.exports = class Ban extends Command {
 		super({
 			name: "ban",
 			desc: "Bans a guild member from a guild.",
+			detailed: "Bans a guild member from a guild. Reason can be included (Audit Logs).",
 			usage: "<@member> [reason]",
 			admin: true,
 			messageSplit: true,

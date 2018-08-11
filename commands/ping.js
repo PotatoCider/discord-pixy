@@ -4,7 +4,8 @@ module.exports = class Ping extends Command {
 	constructor(self) {
 		super({
 			name: "ping",
-			desc: "Time taken for a message to travel round-trip.",
+			desc: "Time taken for a message to travel back and forth.",
+			detailed: "Time taken for a message to travel round-trip. This **does not** tell your ping, but tells my ping.",
 			self
 		});
 	}

@@ -5,6 +5,7 @@ module.exports = class Unban extends Command {
 		 super({
 		 	name: "unban",
 		 	desc: "Unbans a user from a guild.",
+		 	detailed: "Unbans a user from a guild. Reason can be included (Audit Logs).",
 		 	usage: "<name>[#1234] [reason]",
 		 	admin: true,
 		 	requiresGuild: true,
@@ -44,7 +45,7 @@ module.exports = class Unban extends Command {
 
 		const m = await reply
 		.append('Type in the discord tag you want to ban. Type "cancel" to cancel.')
-		.await(m => tags[m.content] || m.content === "cancel", toUnban.length > 10 ? 60 : 20, true);
+		.await(m => tags[m.content] || m.content === "cancel", toUnban.length > 10 ? 60 : 20);
 
 		reply = reply.next;
 		if(!m)reply.throw("Selection timed out.");

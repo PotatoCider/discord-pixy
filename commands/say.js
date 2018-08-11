@@ -4,7 +4,8 @@ module.exports = class Say extends Command {
 	constructor(self) {
 		super({
 			name: "say",
-			desc: "Repeats what you said in a different channel.",
+			desc: "Repeats what you said.",
+			detailed: "Repeats what you said. Can be in a different channel.",
 			usage: "[channel] <message>",
 			messageSplit: true,
 			admin: true,

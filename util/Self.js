@@ -1,19 +1,14 @@
 const
-	[ { Client }, EventEmitter, fs, Constants, Helpers, loadModules, errorHandler ] = 
-	require("./loadModules")("discord.js", "events", "fs", "Constants", "Helpers", "loadModules", "error");
-
-require("../setup");
-
-process.on("unhandledRejection", console.log)
-.on("uncaughtException", console.log);
-
+	[ _, { Client }, EventEmitter, fs, Constants, Helpers, loadModules, errorHandler, Database, MusicPlayer ] = 
+	require("./loadModules")("../setup", "discord.js", "events", "fs", "Constants", "Helpers", "loadModules", "error", "Database", "MusicPlayer");
 
 module.exports = class Self extends EventEmitter {
 	constructor() {
 		super();
 
 		this.client = new Client();
-		this.guilds = this.commands = {};
+		this.guilds = {};
+		this.commands = {};
 		this.prefix = process.env.PREFIX;
  		this.production = process.env.PRODUCTION === "TRUE";
 		this.set = false;
@@ -29,15 +24,28 @@ module.exports = class Self extends EventEmitter {
 		.on("warn", errorHandler)
 		.on("error", errorHandler);
 
-		Promise.all([
-			this.login(),
-			this.loadCommands("commands")	
-		]).then(() => {
+		this.init = new Promise(resolve => this.once("set", resolve));
+
+		this.start().then(() => {
 			this.emit("set");
 			this.set = true;
-			console.log("Pixy is online!");
+			console.log(`${ this.client.user.username } is online!`);
 		});
 
+	}
+
+	async start() {
+		this.db = await new Database(process.env.MONGODB_URI, process.env.MONGODB_URI.split("/").pop()).init;
+		console.log("Database connected.");
+		await Promise.all([this.login(), this.loadCommands("commands")]);
+		await this.loadGuilds();
+	}
+
+	async loadGuilds() {
+		const ids = this.client.guilds.keyArray();
+		for(let i = 0; i < ids.length; i++) {
+			this.guilds[ids[i]] = { player: new MusicPlayer() };
+		}
 	}
 	
 	async loadCommands(path, reload) {

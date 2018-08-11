@@ -5,6 +5,7 @@ module.exports = class Unmute extends Command {
 		super({
 			name: "unmute",
 			desc: `Reverses the effect of ${ self.prefix }mute.`,
+			detailed: `Reverses the effect of ${ self.prefix }mute. Reason can be included (Audit Logs).`,
 			usage: "<@member/all> [reason]",
 			admin: true,
 			requiresGuild: true,

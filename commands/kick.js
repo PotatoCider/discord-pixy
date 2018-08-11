@@ -5,6 +5,7 @@ module.exports = class Kick extends Command {
 		super({
 			name: "kick",
 			desc: "Kicks a guild member from a guild.",
+			detailed: "Kicks a guild member from a guild. Reason can be included (Audit Logs).",
 			usage: "<@member> [reason]",
 			admin: true,
 			messageSplit: true,
