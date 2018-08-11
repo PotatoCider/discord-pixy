@@ -8,6 +8,7 @@ module.exports = class Name extends Command {
 			usage: "",
 			requiresGuild: true,
 			messageSplit: true,
+			aliases: [],
 			utils: [],
 			ignore: true, // Remove this line
 			self

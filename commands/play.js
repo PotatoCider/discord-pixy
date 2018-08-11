@@ -16,13 +16,13 @@ module.exports = class Play extends Command {
 	async run(msg, query, reply) {
 		const vc = msg.member.voiceChannel;
 		if(!vc)reply.throw("Please join a voice channel!");
-		if(!query)reply.throw("Please specify a song!");
+		if(!query)reply.throw("Please specify a video name!");
 		
 		const player = this.self.guilds[msg.guild.id].player;
 
 		let selected;
 		if(!this.utils.ytdl.validateURL(query)) {
-			const results = await this.utils.youtube.searchInfo(query, { maxResults: 5 });
+			const results = await this.utils.youtube.searchInfo(query, { maxResults: 10 });
 
 			for(let i = 0; i < results.length; i++) {
 				results[i].duration = this.helpers.resolveDuration({ iso: results[i].duration, yt: true });
@@ -30,7 +30,7 @@ module.exports = class Play extends Command {
 			selected = await this.selection(results, msg, reply);
 			reply = reply.next;
 			if(selected === "cancel")return reply.append("Selection cancelled.").delete(5);
-		} else [ selected ] = await this.utils.youtube.fetchVideoInfo(this.utils.ytdl.getURLVideoId(query));
+		} else [ selected ] = await this.utils.youtube.fetchVideoInfo(this.utils.ytdl.getURLVideoID(query));
 
 		await player.connect(msg.member, msg.guild);
 		player.notify(reply);
