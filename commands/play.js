@@ -42,7 +42,7 @@ module.exports = class Play extends Command {
 		reply.setEmbed({
 			title: `Reply with a song number "1-${ items.length }". Reply "cancel" to cancel selection.`,
 			author: msg.member,
-			thumbnail: this.Constants.images.musicnote,
+			thumbnail: this.Constants.images.music,
 			footer: "Selection timeout in 30 seconds."
 		}).setList();
 

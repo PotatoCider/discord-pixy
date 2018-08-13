@@ -10,6 +10,7 @@ module.exports = {
 
 	images: {
 		musicnote: "https://i.imgur.com/0ulGgYa.jpg",
+		music: "https://i.imgur.com/w71e8kx.jpg",
 		ud: "https://i.imgur.com/2yWtxWX.jpg"
 	}
 };
