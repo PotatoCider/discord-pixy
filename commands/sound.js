@@ -68,8 +68,7 @@ module.exports = class Play extends Command {
 			vc = msg.guild.channels.findAll("name", channel).filter(ch => ch.type === "voice")[0];
 			if(!vc)return reply.throw(`Invalid channel.`);
 		}
-		if(player.nowPlaying)reply.throw("Cannot activate soundboard if playing music.");
-		await player.connect(vc);
+		if(!player.connection)await player.connect(vc);
 		player.playSound(url);
 		reply.append(`Played sound "${ sound }".`);
 	}

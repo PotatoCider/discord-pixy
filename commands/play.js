@@ -25,7 +25,7 @@ module.exports = class Play extends Command {
 			const results = await this.utils.youtube.searchInfo(query, { maxResults: 5 });
 
 			for(let i = 0; i < results.length; i++) {
-				results[i].duration = this.helpers.resolveDuration({ iso: results[i].duration, yt: true });
+				results[i].duration = results[i].live ? "Live" : this.helpers.resolveDuration({ iso: results[i].duration, yt: true });
 			}
 			selected = await this.selection(results, msg, reply);
 			reply = reply.next;
@@ -33,9 +33,8 @@ module.exports = class Play extends Command {
 		} else [ selected ] = await this.utils.youtube.fetchVideoInfo(this.utils.ytdl.getURLVideoID(query));
 
 		await player.connect(msg.member, msg.guild);
-		player.notify(reply);
-		player.add(selected);
-		reply.append(`:arrow_right: | Added **${ selected.title }** (${ selected.duration }) to queue.`);
+		await reply.append(`:arrow_right: | Added **${ selected.title }** (${ selected.duration }) to queue.`).send();
+		player.notify(reply).add(selected);
 	}
 
 	async selection(items, msg, reply) {
