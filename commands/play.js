@@ -13,15 +13,17 @@ module.exports = class Play extends Command {
 		});
 	}
 
-	async run(msg, query, reply) { // Fix queue and nowplaying notifier issue.
+	async run(msg, query, reply) { 
 		const vc = msg.member.voiceChannel;
 		if(!vc)reply.throw("Please join a voice channel!");
 		if(!query)reply.throw("Please specify a video name!");
 		
-		const player = this.self.guilds[msg.guild.id].player;
+		const player = this.self.guilds[msg.guild.id].player,
+			connecting = player.connect(msg.member, msg.guild);
 
 		let selected;
 		if(!this.utils.ytdl.validateURL(query)) {
+			reply.collect(m => m.content >= 1 && m.content <= 5 || m.content === "cancel", 35);
 			const results = await this.utils.youtube.searchInfo(query, { maxResults: 5 });
 			player.preload(results);
 			for(let i = 0; i < results.length; i++) {
@@ -29,12 +31,16 @@ module.exports = class Play extends Command {
 			}
 			selected = await this.selection(results, msg, reply);
 			reply = reply.next;
-			if(selected === "cancel")return reply.append("Selection cancelled.").delete(5);
+			if(selected === "cancel") {
+				player.cleanup(false);
+				return reply.append("Selection cancelled.").delete(5);
+			}
 		} else [ selected ] = await this.utils.youtube.fetchVideoInfo(this.utils.ytdl.getURLVideoID(query));
 
-		await player.connect(msg.member, msg.guild);
-		await reply.append(`:arrow_right: | Added **${ selected.title }** (${ selected.duration }) to queue.`).send();
-		player.notify(reply).add(selected);
+		await connecting;
+		reply.append(`:arrow_right: | Added **${ selected.title }** (${ selected.duration }) to queue.`).send();
+		player.notify(reply);
+		player.add(selected);
 	}
 
 	async selection(items, msg, reply) {
@@ -49,7 +55,7 @@ module.exports = class Play extends Command {
 			const { title, id, duration } = items[i];
 			reply.append(`[**${ title }**](https://www.youtube.com/watch?v=${ id }) **(${ duration })**`);
 		}
-		const m = await reply.await(m => m.content >= 1 && m.content <= items.length || m.content === "cancel", 30);
+		const m = await reply.await();
 		if(!m)reply.next.delete(10).throw("Selection timed out.");
 		return m.content === "cancel" ? "cancel" : items[m.content - 1];
 	}

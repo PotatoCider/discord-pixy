@@ -71,9 +71,10 @@ module.exports = class MusicPlayer extends Array {
 	}
 
 	async cleanup(queue = true) {
-		this.nowPlaying = this.dispatcher = this.reply = this.connection = this.stream = null;
-		if(queue)this.length = 0;
 		if(this.vc)await this.vc.leave();
+		if(this.stream)this.stream.destroy();
+		if(queue)this.length = 0;
+		this.nowPlaying = this.dispatcher = this.reply = this.connection = this.stream = null;
 		return this;
 	}
 }
