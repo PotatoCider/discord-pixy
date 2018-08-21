@@ -3,8 +3,16 @@ const ytdl = require("ytdl-core");
 module.exports = class MusicPlayer extends Array {
 	add(item) {
 		this.push(item);
-		item.stream = this.ytdl(item);
+		if(!item.stream)item.stream = this.ytdl(item);
 		if(!this.nowPlaying)this.play();
+		return this;
+	}
+
+	preload(items) {
+		if(!(items instanceof Array))items = [ items ];
+		for(let i = 0; i < items.length; i++) {
+			items[i].stream = this.ytdl(items[i]);
+		}
 		return this;
 	}
 
@@ -18,7 +26,12 @@ module.exports = class MusicPlayer extends Array {
 
 		this.nowPlaying = this.shift();
 		this.stream = this.nowPlaying.stream;
+		const start = Date.now();
 		this.dispatcher = this.connection.playStream(this.stream);
+
+		this.dispatcher.once("speaking", () => {
+			console.log(Date.now() - start);
+		})
 
 		const { title, duration, channelTitle } = this.nowPlaying;
 

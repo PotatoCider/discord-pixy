@@ -23,7 +23,7 @@ module.exports = class Play extends Command {
 		let selected;
 		if(!this.utils.ytdl.validateURL(query)) {
 			const results = await this.utils.youtube.searchInfo(query, { maxResults: 5 });
-
+			player.preload(results);
 			for(let i = 0; i < results.length; i++) {
 				results[i].duration = results[i].live ? "Live" : this.helpers.resolveDuration({ iso: results[i].duration, yt: true });
 			}

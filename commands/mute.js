@@ -23,7 +23,7 @@ module.exports = class Mute extends Command {
 			]);
 		if(!member)reply.throw("Invalid guild member.");
 
-		if(member.roles.find("name", "Muted") && this.channelHasRole(msg.channel, role))
+		if(member.roles.find(role => role.name === "Muted") && this.channelHasRole(msg.channel, role))
 			reply.throw("That member is already muted.");
 
 		await member.addRole(role, reason);
@@ -36,7 +36,7 @@ module.exports = class Mute extends Command {
 	}
 
 	async getMutedRole(guild, reply) {
-		const role = guild.roles.find("name", "Muted"),
+		const role = guild.roles.find(role => role.name === "Muted"),
 			isSet = role && guild.channels.every(channel => 
 				channel.type !== "text" || 
 				this.channelHasRole(channel, role)
