@@ -15,7 +15,8 @@ module.exports = class Eval extends Command {
 		if(!this.Constants.owners.includes(msg.author.id))return;
 		if(params === "clear")return new Promise(resolve => this.utils.fs.writeFile("log.txt", "", err => {
 			if(err)throw err;
-			resolve("Error log cleared.");
+			reply.append("Error log cleared.");
+			resolve();
 		}));
 			
 		const client = msg.client, self = client.self;

@@ -61,24 +61,32 @@ module.exports = class Message {
 		this.channel = channel || this.channel;
 		if(!this.channel)throw new Error("No channel specified.");
 		this.sent = true;
+		let resolve;
+		this.sending = new Promise(res => resolve = res);
 		const msg = await this.channel.send(this.content, this.options);
 
 		if(!isNaN(this.del))msg.delete(this.del);
 		this.next = new Message(this.channel);
 		this.next.prev = msg.from = this;
-		return this.sent = msg;
+		this.sent = msg;
+		resolve();
+		return msg;
 	}
 
 	async await(filter, time, del = true, inMs = false) {
 		if(!time)throw new Error("Argument Error: time");
-		if(!this.sent)this.send();
 		if(!inMs)time *= 1000;
+		if(!this.sent)this.send();
 		if(typeof filter === "string")filter = m => m.content === filter;
+
 		const msg = await this.channel.createMessageCollector(filter, { time }).next.catch(err => {
 			if(err instanceof Map)return null;
 			throw err;
 		});
-		if(del || typeof del === "number")Promise.resolve(this.sent).then(sent => sent.delete(typeof del === "number" ? del : 0));
+		if(del || typeof del === "number") {
+			await this.sending;
+			this.sent.delete(typeof del === "number" ? del : 0);
+		}
 		return msg;
 	}
 

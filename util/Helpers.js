@@ -41,7 +41,7 @@ module.exports = class Helpers {
 		return Constants.owners.includes(user);
 	}
 
-	resolveDuration({ms = 0, s = 0, m = 0, h = 0, d = 0, iso, format = false, yt = false}) {
+	resolveDuration({ ms = 0, s = 0, m = 0, h = 0, d = 0, iso, format, yt }) {
 		if(iso){
 			const time = iso.match(/P(?:(\d*)D)?T(?:(\d*)H)?(?:(\d*)M)?(?:(\d*)S)?/);
 			if(!time)throw new Error("Invaild params.");

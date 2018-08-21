@@ -3,8 +3,13 @@ const ytdl = require("ytdl-core");
 module.exports = class MusicPlayer extends Array {
 	add(item) {
 		this.push(item);
+		item.stream = this.ytdl(item);
 		if(!this.nowPlaying)this.play();
 		return this;
+	}
+
+	ytdl(item) {
+		return ytdl(`https://www.youtube.com/watch?v=${ item.id }`, item.live ? {} : { quality: "highestaudio", filter: "audioonly" });
 	}
 
 	async play(reason) {
@@ -12,8 +17,12 @@ module.exports = class MusicPlayer extends Array {
 		if(!this.connection)throw new Error("Not connected to vc to play.");
 
 		this.nowPlaying = this.shift();
-		this.stream = ytdl(`https://www.youtube.com/watch?v=${ this.nowPlaying.id }`, this.nowPlaying.live ? {} : { quality: "highestaudio", filter: "audioonly" });
+		this.stream = this.connection.client.self.toggle ? this.nowPlaying.stream : this.ytdl(this.nowPlaying);
+		const start = Date.now();
 		this.dispatcher = this.connection.playStream(this.stream);
+		this.dispatcher.once("speaking", () => {
+			console.log(Date.now() - start);
+		});
 
 		const { title, duration, channelTitle } = this.nowPlaying;
 
