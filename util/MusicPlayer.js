@@ -17,12 +17,8 @@ module.exports = class MusicPlayer extends Array {
 		if(!this.connection)throw new Error("Not connected to vc to play.");
 
 		this.nowPlaying = this.shift();
-		this.stream = this.connection.client.self.toggle ? this.nowPlaying.stream : this.ytdl(this.nowPlaying);
-		const start = Date.now();
+		this.stream = this.nowPlaying.stream;
 		this.dispatcher = this.connection.playStream(this.stream);
-		this.dispatcher.once("speaking", () => {
-			console.log(Date.now() - start);
-		});
 
 		const { title, duration, channelTitle } = this.nowPlaying;
 
