@@ -31,6 +31,10 @@ module.exports = class Message {
 		return this;
 	}
 
+	get new() {
+		return new Message(this.channel);
+	}
+
 	prefix(delimiter) {
 		this.delimiter = delimiter || "";
 		return this;
@@ -61,7 +65,7 @@ module.exports = class Message {
 		this.channel = channel || this.channel;
 		if(!this.channel)throw new Error("No channel specified.");
 		this.sent = true;
-		this.next = new Message(this.channel);
+		this.next = this.new;
 		
 		let resolve;
 		this.sending = new Promise(res => resolve = res);

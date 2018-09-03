@@ -4,7 +4,7 @@ const Self = require("./util/Self"),
 	prefix = self.prefix;
 
 self.client.on("message", async msg => {
-	await this.init;
+	await self.init;
 	if(!msg.content.startsWith(prefix) || msg.author.bot)return;
 
 	const channel = msg.channel,

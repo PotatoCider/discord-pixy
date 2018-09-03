@@ -44,7 +44,7 @@ module.exports = class Self extends EventEmitter {
 	async loadGuilds() {
 		const ids = this.client.guilds.keyArray();
 		for(let i = 0; i < ids.length; i++) {
-			this.guilds[ids[i]] = { player: new MusicPlayer() };
+			this.guilds[ids[i]] = { player: new MusicPlayer(this) };
 		}
 	}
 	

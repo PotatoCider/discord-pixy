@@ -1,6 +1,15 @@
 const ytdl = require("ytdl-core");
 
 module.exports = class MusicPlayer extends Array {
+	constructor(self) {
+		super();
+
+		this.self = self;
+
+		self.client.on("voiceStateUpdate", (oldMember, member) => {
+			if(member.voiceChannel && this.joined)this.joined(member);
+		})
+	}
 	add(item) {
 		this.push(item);
 		if(!item.stream)item.stream = this.ytdl(item);
@@ -52,21 +61,37 @@ module.exports = class MusicPlayer extends Array {
 		this.soundStream = ytdl(url, { filter: "audioonly" });
 		this.dispatcher = this.connection.playStream(this.soundStream);
 		this.dispatcher.once("end", () => {
-			if(!this.nowPlaying)return this.cleanup(false);
-			this.connection.playStream(this.stream);
+			if(this.nowPlaying)return this.connection.playStream(this.stream);
+			this.cleanup(false);
+			this.soundStream = null;
 		});
 		return this;
 	}
 
 	async connect(member, guild) {
 		if(this.connection)return;
-		this.vc = member.voiceChannel || member;
+		if(member.user) {
+			this.member = member;
+			this.vc = member.voiceChannel;
+		} else this.vc = member;
+
+		if(!this.vc) {
+			const join = new Promise(resolve => {
+				this.joined = member => {
+					if(member.id === this.member.id)resolve(member.voiceChannel);
+				};
+			});
+			const msg = this.reply.append("Please join a voice channel so that I can play music!");
+			this.vc = await join;
+			(await msg).delete();
+			this.reply = this.reply.next;
+		}
 		this.connection = await this.vc.join();
 		return this;
 	}
 
 	notify(reply) {
-		this.reply = reply.sent ? reply.next : reply;
+		this.reply = reply.new;
 		return this;
 	}
 

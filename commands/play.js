@@ -14,12 +14,10 @@ module.exports = class Play extends Command {
 	}
 
 	async run(msg, query, reply) { 
-		const vc = msg.member.voiceChannel;
-		if(!vc)reply.throw("Please join a voice channel!");
 		if(!query)reply.throw("Please specify a video name!");
 		
 		const player = this.self.guilds[msg.guild.id].player,
-			connecting = player.connect(msg.member, msg.guild);
+			connecting = player.notify(reply).connect(msg.member, msg.guild);
 
 		let selected;
 		if(!this.utils.ytdl.validateURL(query)) {
@@ -35,11 +33,14 @@ module.exports = class Play extends Command {
 				player.cleanup(false);
 				return reply.append("Selection cancelled.").delete(5);
 			}
-		} else [ selected ] = await this.utils.youtube.fetchVideoInfo(this.utils.ytdl.getURLVideoID(query));
+		} else {
+			[ selected ] = await this.utils.youtube.fetchVideoInfo(this.utils.ytdl.getURLVideoID(query));
+			selected.duration = this.helpers.resolveDuration({ iso: results[i].duration, yt: true });
+		}
 
-		await connecting;
 		reply.append(`:arrow_right: | Added **${ selected.title }** (${ selected.duration }) to queue.`).send();
-		player.notify(reply);
+		if(!msg.member.voiceChannel)player.reply.send();
+		await connecting;
 		player.add(selected);
 	}
 
