@@ -19,7 +19,7 @@ module.exports = class Pause extends Command {
 		if(!player.nowPlaying)reply.throw("Music is not playing.");
 
 		if(player.dispatcher.paused) {
-			player.dispatcher.continue();
+			player.dispatcher.resume();
 			reply.append("Resumed music player.")
 		} else {
 			player.dispatcher.pause();

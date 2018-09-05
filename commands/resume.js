@@ -20,7 +20,7 @@ module.exports = class Resume extends Command {
 
 		if(!player.dispatcher.paused)reply.throw("Music player is not paused!");
 
-		player.dispatcher.continue();
+		player.dispatcher.resume();
 		reply.append("Resumed music player.");
 	}
 }	

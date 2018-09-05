@@ -12,7 +12,7 @@ module.exports = class MusicPlayer extends Array {
 	}
 	add(item) {
 		this.push(item);
-		if(!item.stream)item.stream = this.ytdl(item);
+		if(!item.stream || item.stream._writableState.ending)this.preload(item);
 		if(!this.nowPlaying)this.play();
 		return this;
 	}
@@ -26,7 +26,7 @@ module.exports = class MusicPlayer extends Array {
 	}
 
 	ytdl(item) {
-		return ytdl(`https://www.youtube.com/watch?v=${ item.id }`, item.live ? {} : { quality: "highestaudio", filter: "audioonly" });
+		return ytdl(`https://www.youtube.com/watch?v=${ item.id }`);
 	}
 
 	async play(reason) {
@@ -46,7 +46,11 @@ module.exports = class MusicPlayer extends Array {
 
 		this.dispatcher.once("end", reason => {
 			if(reason === "sound")return;
-			if(this.repeat)this.push(this.nowPlaying);
+			if(this.repeat) {
+				this.nowPlaying.stream = null;
+				this.add(this.nowPlaying);
+			}
+
 			if(this[0] && reason !== "stop")return this.play();
 			this.cleanup();
 		});
