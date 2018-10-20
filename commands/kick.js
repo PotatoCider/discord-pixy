@@ -21,6 +21,6 @@ module.exports = class Kick extends Command {
 
 		await member.kick(reason);
 
-		reply.append(`Successfully kicked ${ member }${ reason ? ` due to **${ reason }**` : "" }.`);
+		reply.append(`Successfully kicked <@${ member.id }>${ reason ? ` due to **${ reason }**` : "" }.`);
 	}
 }
