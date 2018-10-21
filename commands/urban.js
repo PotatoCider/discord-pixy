@@ -14,7 +14,6 @@ module.exports = class Urban extends Command {
 	}
 
 	async run(msg, term, reply) {
-		if()
 		const { entries } = term === "" ? await this.utils.urban.term(term) : await this.utils.urban.random(),
 			pages = new this.utils.Pages(msg.channel);
 		for(let i = 0; i < entries.length; i++) {
@@ -29,7 +28,7 @@ module.exports = class Urban extends Command {
 
 			const page = reply.getEmbed({
 				author: msg.author,
-				title: `**Definition of ${ word }**`,
+				title: `**${ term ? "D" : "Random d" }efinition of ${ word }**`,
 				url: permalink,
 				description: definition,
 				fields: split.concat(
