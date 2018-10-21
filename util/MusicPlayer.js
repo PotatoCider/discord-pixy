@@ -17,23 +17,25 @@ module.exports = class MusicPlayer extends Array {
 		return this;
 	}
 
-	preload(items) {
+	preload(items, force) {
 		if(!(items instanceof Array))items = [ items ];
 		for(let i = 0; i < items.length; i++) {
-			items[i].stream = this.ytdl(items[i]);
+			if(items[i].live && !force)continue;
+			items[i].stream = ytdl(items[i].url);
 		}
 		return this;
 	}
 
 	ytdl(item) {
-		return ytdl(`https://www.youtube.com/watch?v=${ item.id }`);
+		return ytdl(item.url);
 	}
 
-	async play(reason) {
+	async play(reason) { 
 		if(!this[0] || reason === "stop")return;
 		if(!this.connection)throw new Error("Not connected to vc to play.");
 
 		this.nowPlaying = this.shift();
+		if(this.nowPlaying.live)this.preload(this.nowPlaying, true);
 		this.stream = this.nowPlaying.stream;
 		const start = Date.now();
 		this.dispatcher = this.connection.playStream(this.stream);
@@ -45,13 +47,13 @@ module.exports = class MusicPlayer extends Array {
 		const { title, duration, channelTitle } = this.nowPlaying;
 
 		this.dispatcher.once("end", reason => {
-			if(reason === "sound")return;
+			if(reason === "sound" || reason === "stop")return;
 			if(this.repeat) {
 				this.nowPlaying.stream = null;
 				this.add(this.nowPlaying);
 			}
 
-			if(this[0] && reason !== "stop")return this.play();
+			if(this[0])return this.play();
 			this.cleanup();
 		});
 		

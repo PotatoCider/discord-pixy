@@ -73,6 +73,7 @@ exports.fetchVideoInfo = (ids, maxResults = 50, big = false) => // pageToken + i
 			const { snippet, contentDetails, statistics, liveStreamingDetails } = items[i];
 			items[i] = Object.assign(snippet, contentDetails, statistics, liveStreamingDetails, {
 				id: ids[i],
+				url: `https://www.youtube.com/watch?v=${ ids[i] }`,
 				live: snippet.liveBroadcastContent === "live",
 				upcoming: snippet.liveBroadcastContent === "upcoming",
 				thumbnail: `https://i.ytimg.com/vi/${ ids[i] }/${ snippet.thumbnails ? "maxres" : "mq" }default.jpg`

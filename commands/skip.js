@@ -16,7 +16,7 @@ module.exports = class Skip extends Command {
 
 	async run(msg, params, reply) {
 		const index = params.shift(),
-			player = this.self.guilds[msg.guild.id].player;
+			player = msg.guild.player;
 		if(index) {
 			if(isNaN(index) || index < 0)reply.throw("Please specify a valid number.");
 			if(index > player.length)reply.throw("Song number out of range.");

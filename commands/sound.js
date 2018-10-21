@@ -61,7 +61,7 @@ module.exports = class Play extends Command {
 		}
 
 		let vc = msg.member.voiceChannel;
-		const player = this.self.guilds[msg.guild.id].player;
+		const player = msg.guild.player;
 		if(player.connection && !vc) {
 			const channel = params.join(" ");	
 			if(!channel)return reply.throw(`Join or specify a channel: ~play ${ sound } <Channel>`);

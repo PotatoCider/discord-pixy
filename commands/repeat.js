@@ -16,7 +16,7 @@ module.exports = class Repeat extends Command {
 	}
 
 	async run(msg, params, reply) {
-		const player = this.self.guilds[msg.guild.id].player,
+		const player = msg.guild.player,
 			choice = params.shift(),
 			before = player.repeat;
 

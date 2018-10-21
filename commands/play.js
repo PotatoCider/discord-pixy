@@ -15,8 +15,8 @@ module.exports = class Play extends Command {
 
 	async run(msg, query, reply) { 
 		if(!query)reply.throw("Please specify a video name!");
-		
-		const player = this.self.guilds[msg.guild.id].player,
+		// Preconnect.
+		const player = msg.guild.player,
 			connecting = player.notify(reply).connect(msg.member, msg.guild);
 
 		let selected;
@@ -53,8 +53,8 @@ module.exports = class Play extends Command {
 		}).setList();
 
 		for(let i = 0; i < items.length; i++) {
-			const { title, id, duration } = items[i];
-			reply.append(`[**${ title }**](https://www.youtube.com/watch?v=${ id }) **(${ duration })**`);
+			const { title, url, duration } = items[i];
+			reply.append(`[**${ title }**](${ url }) **(${ duration })**`);
 		}
 		const m = await reply.await();
 		if(!m)reply.next.delete(10).throw("Selection timed out.");

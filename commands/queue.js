@@ -15,7 +15,7 @@ module.exports = class Queue extends Command {
 	}
 
 	async run(msg, params, reply) { // Add url from videoId convienence to youtube.js
-		const player = this.self.guilds[msg.guild.id].player;
+		const player = msg.guild.player;
 		if(!player.nowPlaying && !player.length)reply.throw("Nothing is playing and queue is empty.");
 		const { title, duration, id } = player.nowPlaying || {},
 			currentTime = this.helpers.resolveDuration({ ms: player.dispatcher.time, yt: true });

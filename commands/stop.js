@@ -15,9 +15,9 @@ module.exports = class Stop extends Command {
 	}
 
 	async run(msg, params, reply) {
-		const player = this.self.guilds[msg.guild.id].player,
+		const player = msg.guild.player,
 			queue = player.length,
-			playing = player.dispatcher || player.connection || player.nowPlaying;
+			playing = player.dispatcher || player.connection || player.nowPlaying || msg.guild.me.voiceChannel;
 		if(!playing && !queue)reply.throw("Nothing is playing and queue is empty.");
 		if(player.dispatcher)player.dispatcher.end("stop");
 

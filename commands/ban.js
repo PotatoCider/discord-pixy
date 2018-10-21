@@ -21,6 +21,6 @@ module.exports = class Ban extends Command {
 
 		await member.ban(reason);
 
-		reply.append(`Successfully banned ${ member }${ reason ? ` due to **${ reason }**` : "" }.`);
+		reply.append(`Successfully banned <@${ member.id }>${ reason ? ` due to **${ reason }**` : "" }.`);
 	}
 }

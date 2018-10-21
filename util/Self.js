@@ -20,7 +20,16 @@ module.exports = class Self extends EventEmitter {
 
 		this.client.self = this;
 
+		let reactionListener = (reaction, user) => {
+			if(!reaction.me || user.id === this.client.user.id)return;
+			const react = this.guilds[reaction.message.guild.id].reactions[reaction.message.id];
+			if(!react)return;
+			react(reaction, user);
+		};
+
 		this.client
+		.on("messageReactionAdd", reactionListener)
+		.on("messageReactionRemove", reactionListener)
 		.on("warn", errorHandler)
 		.on("error", errorHandler);
 
@@ -34,6 +43,12 @@ module.exports = class Self extends EventEmitter {
 
 	}
 
+	setMessage(msg) {
+		msg.self = this;
+		msg.guild.s = this.guilds[msg.guild.id];
+		msg.guild.player = msg.guild.s.player;
+	}
+
 	async start() {
 		this.db = await new Database(process.env.MONGODB_URI, process.env.MONGODB_URI.split("/").pop()).init;
 		console.log("Database connected.");
@@ -44,7 +59,7 @@ module.exports = class Self extends EventEmitter {
 	async loadGuilds() {
 		const ids = this.client.guilds.keyArray();
 		for(let i = 0; i < ids.length; i++) {
-			this.guilds[ids[i]] = { player: new MusicPlayer(this) };
+			this.guilds[ids[i]] = { player: new MusicPlayer(this), reactions: {} };
 		}
 	}
 	

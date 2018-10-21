@@ -41,6 +41,24 @@ module.exports = class Helpers {
 		return Constants.owners.includes(user);
 	}
 
+	splitLength(text, maxLength = 1024, { char = "\n", prepend, append } = {}) {
+		try {
+			let content = Constants.Discord.Util.splitMessage(text, { maxLength, char, prepend, append });
+			if(typeof content === "string") {
+				content = [ prepend + content + append ];
+			}
+			return content;
+		} catch(err) {
+			if(err.message === "SPLIT_MAX_LEN")return false;
+			throw err;
+		}
+	}
+
+	addContLink(link, text, maxLen = 1024, { prepend = "", append = "" } = {}) {
+		if(maxLen && text.length <= maxLen)return text;
+		return prepend + text.slice(0, maxLen - 7 - prepend.length - append.length - link.length) + `(...)[${ link }]` + append;
+	}
+
 	resolveDuration({ ms = 0, s = 0, m = 0, h = 0, d = 0, iso, format, yt }) {
 		if(iso){
 			const time = iso.match(/P(?:(\d*)D)?T(?:(\d*)H)?(?:(\d*)M)?(?:(\d*)S)?/);
@@ -76,6 +94,7 @@ module.exports = class Helpers {
 		}
 		return { ms, s, m, h, d };
 	}
+
 	resolveIsoDate(iso) {
 		let [ _, y, mm, d, h, m ] = iso.match(/(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):\d\d\.\d{3}Z/),
 			suffix = "am";

@@ -15,7 +15,7 @@ module.exports = class Pause extends Command {
 	}
 
 	async run(msg, params, reply) {
-		const player = this.self.guilds[msg.guild.id].player;
+		const player = msg.guild.player;
 		if(!player.nowPlaying)reply.throw("Music is not playing.");
 
 		if(player.dispatcher.paused) {

@@ -1,3 +1,5 @@
+const Discord = require("discord.js");
+
 module.exports = {
 	patterns: {
 		user: /<@!?([0-9]+)>/,
@@ -12,5 +14,7 @@ module.exports = {
 		musicnote: "https://i.imgur.com/0ulGgYa.jpg",
 		music: "https://i.imgur.com/w71e8kx.jpg",
 		ud: "https://i.imgur.com/2yWtxWX.jpg"
-	}
+	},
+
+	Discord
 };

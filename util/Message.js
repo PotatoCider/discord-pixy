@@ -1,6 +1,6 @@
-const Discord = require("discord.js");
+const Embed = require("./Embed");
 module.exports = class Message {
-	constructor(channel, content, del, list, options, delimiter) {
+	constructor(channel, { content, del, list, options, delimiter, embed } = {}) {
 		if(!channel)throw new Error("Missing channel");
 		this.channel = channel;
 		this.content = content || "";
@@ -9,6 +9,7 @@ module.exports = class Message {
 		this.options = options || { split: true };
 		this.error = this.sent = false;
 		this.done = new Promise(resolve => this.resolve = resolve);
+		if(embed)this.setEmbed(embed);
 		if(list)this.setList();
 	}
 
@@ -78,16 +79,18 @@ module.exports = class Message {
 		return msg;
 	}
 
-	collect(filter, time, inMs = false) {
+	collect(val, time, inMs = false) {
 		if(!time)throw new Error("Missing argument: time.");
 		if(!inMs)time *= 1000;
+		let filter = val;
+		if(typeof filter === "string")filter = m => m.content === val;
+		if(filter instanceof Array)filter = m => val.includes(m);
 		this.collector = this.channel.createMessageCollector(filter, { time });
 	}
 
 	async await(del = true, inMs = false) {
 		if(!this.collector)throw new Error("Need to collect messages before awaiting them.");
 		if(!this.sent)this.send();
-		if(typeof filter === "string")filter = m => m.content === filter;
 
 		const msg = await this.collector.next.catch(err => {
 			if(err instanceof Map)return null;
@@ -116,38 +119,30 @@ module.exports = class Message {
 		return this;
 	}
 
-	setEmbed({ file, author, color = "RANDOM", description, footer, image, thumbnail, timestamp = true, title, url } = {}, delimiter = "\n") {
-		if(author instanceof Discord.GuildMember) {
-			const user = { name: author.displayName, icon: author.user.displayAvatarURL };
-			author = user;
-		}
-		if(author instanceof Discord.User) {
-			const user = { name: author.username, icon: author.displayAvatarURL };
-			author = user;
-		}
-		if(typeof footer === "string")footer = { text: footer };
-		this.embed = new Discord.RichEmbed()
+	getEmbed(details = {}) {
+		if(details instanceof Embed.RichEmbed)return details;
+		const { file, author = {}, fields = [], color = "RANDOM", description, footer = {}, image, thumbnail, timestamp, title, url } = details;
+
+		return new Embed()
 		.attachFile(file)
-		.setAuthor(author.name, author.icon, author.url)
+		.setAuthor(author)
 		.setColor(color)
 		.setDescription(description || "")
-		.setFooter(footer.text || "", footer.icon)
+		.setFooter(footer)
 		.setImage(image)
 		.setThumbnail(thumbnail)
-		.setTimestamp(timestamp === true ? undefined : timestamp)
+		.setTimestamp(timestamp)
 		.setTitle(title || "")
-		.setURL(url);
+		.setURL(url)
+		.addFields(fields);
+	}
 
+	setEmbed(details, delimiter = "\n") {
+
+		this.embed = this.getEmbed(details);
 		this.opts({ embed: this.embed });
 		this.prefix(delimiter);
 		
-		return this;
-	}
-
-	addField(name, value, inline) {
-		if(!this.embed)throw new Error("No embed when addField is called");
-		this.embed.addField(name, value, inline);
-
 		return this;
 	}
 }
