@@ -14,7 +14,7 @@ module.exports = class Urban extends Command {
 	}
 
 	async run(msg, term, reply) {
-		const { entries } = term === "" ? await this.utils.urban.term(term) : await this.utils.urban.random(),
+		const { entries } = term === "" ? await this.utils.urban.random() : await this.utils.urban.term(term),
 			pages = new this.utils.Pages(msg.channel);
 		for(let i = 0; i < entries.length; i++) {
 			let { author, definition, example, permalink, thumbs_up, thumbs_down, word } = entries[i],
