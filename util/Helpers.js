@@ -1,4 +1,5 @@
 const Constants = require("./Constants"),
+	Embed = require("./Embed"),
 	months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 let self;
@@ -39,6 +40,24 @@ module.exports = class Helpers {
 	isAdmin(user) {
 		if(typeof user !== "string")user = user.id;
 		return Constants.owners.includes(user);
+	}
+
+	getEmbed(details = {}) {
+		if(details instanceof Embed.RichEmbed)return details;
+		const { file, author = {}, fields = [], color = "RANDOM", description, footer = {}, image, thumbnail, timestamp, title, url } = details;
+
+		return new Embed()
+		.attachFile(file)
+		.setAuthor(author)
+		.setColor(color)
+		.setDescription(description || "")
+		.setFooter(footer)
+		.setImage(image)
+		.setThumbnail(thumbnail)
+		.setTimestamp(timestamp)
+		.setTitle(title || "")
+		.setURL(url)
+		.addFields(fields);
 	}
 
 	splitLength(text, maxLength = 1024, { char = "\n", prepend, append } = {}) {

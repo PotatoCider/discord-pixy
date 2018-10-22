@@ -119,27 +119,9 @@ module.exports = class Message {
 		return this;
 	}
 
-	getEmbed(details = {}) {
-		if(details instanceof Embed.RichEmbed)return details;
-		const { file, author = {}, fields = [], color = "RANDOM", description, footer = {}, image, thumbnail, timestamp, title, url } = details;
-
-		return new Embed()
-		.attachFile(file)
-		.setAuthor(author)
-		.setColor(color)
-		.setDescription(description || "")
-		.setFooter(footer)
-		.setImage(image)
-		.setThumbnail(thumbnail)
-		.setTimestamp(timestamp)
-		.setTitle(title || "")
-		.setURL(url)
-		.addFields(fields);
-	}
-
 	setEmbed(details, delimiter = "\n") {
 
-		this.embed = this.getEmbed(details);
+		this.embed = this.channel.client.self.helpers.getEmbed(details);
 		this.opts({ embed: this.embed });
 		this.prefix(delimiter);
 		

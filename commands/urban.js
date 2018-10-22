@@ -14,8 +14,19 @@ module.exports = class Urban extends Command {
 	}
 
 	async run(msg, term, reply) {
-		const { entries } = term === "" ? await this.utils.urban.random() : await this.utils.urban.term(term),
-			pages = new this.utils.Pages(msg.channel);
+		const pages = new this.utils.Pages(msg.channel),
+			isRandom = term === "";
+		if(isRandom) {
+			const rand = await this.utils.urban.random()
+			term = rand.word;
+		}
+		const result = await this.utils.urban.term(term);
+		pages.add(this.formatDefinition(result.entries, msg.author, isRandom));
+		pages.send();
+	}
+
+	formatDefinition(entries, user, isRandom) {
+		if(!(entries instanceof Array))entries = [ entries ];
 		for(let i = 0; i < entries.length; i++) {
 			let { author, definition, example, permalink, thumbs_up, thumbs_down, word } = entries[i],
 				replace = (_, def) => `[${ def }](https://www.urbandictionary.com/define.php?term=${ encodeURIComponent(def) })`;
@@ -26,9 +37,9 @@ module.exports = class Urban extends Command {
 			let split = this.helpers.splitLength(example, 1024, { prepend: "*", append: "*" }) || [ this.helpers.addContLink(permalink, example, 1024, { prepend: "*", append: "*" }) ];
 			split[0] = { name: "Example", value: split[0] };
 
-			const page = reply.getEmbed({
-				author: msg.author,
-				title: `**${ term ? "D" : "Random d" }efinition of ${ word }**`,
+			entries[i] = this.helpers.getEmbed({
+				author: user,
+				title: `**${ isRandom ? "Random d" : "D" }efinition of ${ word }**`,
 				url: permalink,
 				description: definition,
 				fields: split.concat(
@@ -37,8 +48,7 @@ module.exports = class Urban extends Command {
 					{ name: ":thumbsdown:", value: thumbs_down, inline: true }
 				)
 			});
-			pages.add(page);
 		}
-		pages.send();
+		return entries;
 	}
 }	

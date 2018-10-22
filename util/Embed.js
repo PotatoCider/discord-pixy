@@ -18,7 +18,7 @@ module.exports = class Embed extends Discord.RichEmbed {
 		if(typeof text === "object") {
 			({ text, icon } = text);
 		}
-
+		//console.log(text);
 		return super.setFooter(text || "", icon);
 	}
 
@@ -26,12 +26,17 @@ module.exports = class Embed extends Discord.RichEmbed {
 		if(typeof name === "object") {
 			({ name, value, inline } = name);
 		} 
-		super.addField(name || "\u200b", value, inline);
+		return super.addField(name || "\u200b", value, inline);
+	}
+
+	changePage(cur, total) {
+		if(!this.page)this.prevFooter = this.footer.text;
+		this.page = true;
+		return this.setFooter(`Page ${ cur }/${ total }${ this.prevFooter ? " | " : "" }${ this.prevFooter }`, this.footer.icon_url);
 	}
 
 	addFields(...fields) {
 		if(fields[0] instanceof Array)fields = fields[0];
-		console.log(fields.map(f => typeof f))
 		for(let i = 0; i < fields.length; i++) {
 			if(typeof fields[i] === "string")fields[i] = { value: fields[i] };
 			this.addField(fields[i]);
