@@ -72,7 +72,10 @@ module.exports = class Message {
 		this.sending = new Promise(res => resolve = res);
 		const msg = await this.channel.send(this.content, this.options);
 
-		if(!isNaN(this.del))msg.delete(this.del);
+		if(!isNaN(this.del)) {
+			msg.delete(this.del);
+			msg.deleted = true;
+		}
 		this.next.prev = msg.from = this;
 		this.sent = msg;
 		resolve();
@@ -120,7 +123,6 @@ module.exports = class Message {
 	}
 
 	setEmbed(details, delimiter = "\n") {
-
 		this.embed = this.channel.client.self.helpers.getEmbed(details);
 		this.opts({ embed: this.embed });
 		this.prefix(delimiter);

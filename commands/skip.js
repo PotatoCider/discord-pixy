@@ -25,6 +25,7 @@ module.exports = class Skip extends Command {
 			return player.splice(index - 1, 1);
 		}
 		reply.append(`Skipped **${ player.nowPlaying.title }**.`);
+		
 		player.dispatcher.end("skip");
 	}
 }	

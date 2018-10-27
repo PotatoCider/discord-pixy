@@ -17,7 +17,7 @@ module.exports = class Repeat extends Command {
 
 	async run(msg, params, reply) {
 		const player = msg.guild.player,
-			choice = params.shift(),
+			choice = params.shift().toLowerCase(),
 			before = player.repeat;
 
 		if(choice === "on") {

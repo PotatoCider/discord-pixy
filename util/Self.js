@@ -50,7 +50,7 @@ module.exports = class Self extends EventEmitter {
 	}
 
 	async start() {
-		this.db = await new Database(process.env.MONGODB_URI, process.env.MONGODB_URI.split("/").pop()).init;
+		this.db = await new Database(process.env.MONGODB_URI, process.env.MONGODB_URI.split("/").pop(), this).init;
 		console.log("Database connected.");
 		await Promise.all([this.login(), this.loadCommands("commands")]);
 		await this.loadGuilds();

@@ -13,6 +13,8 @@ self.client.on("message", async msg => {
 		cmd = self.commands[name];
 	if(!cmd)return;
 	if(cmd.admin && !self.helpers.isAdmin(msg.author))return;
+	await self.db.checkUser(msg.author);
+	if(msg.author.silentMode)msg.delete();
 	if(cmd.requiresGuild && !msg.guild)return channel.send("This command can only be used in Paragon Xenocide.");
 
 	const params = content.slice(prefix.length + name.length).trim().split(/ +/g);
@@ -34,6 +36,6 @@ self.client.on("message", async msg => {
 
 .on("guildMemberAdd", mem => {
 	const guild = mem.guild,
-		channel = guild.channels.find("name", "welcome");
+		channel = guild.channels.find(ch => ch.name === "welcome");
 	channel.send(`<@${ mem.id }>, Welcome to Paragon Xenocide! You are the ${ guild.memberCount }th user!`);
 });

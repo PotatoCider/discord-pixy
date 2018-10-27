@@ -32,16 +32,15 @@ module.exports = class Play extends Command {
 			if(!sound)reply.throw(`No sound name provided.`);
 			if(!url)reply.throw(`No URL provided.`);
 
-			await this.db.set({ name: sound, url });
+			await this.db.update({ name: sound }, { url });
 			return reply.append(`Successfully added "${ sound }" to the soundboard.`);
-
 		}else if(["remove", "rm", "delete"].includes(sound)) {
 
 			const toRemove = params.shift();
 			if(!toRemove)reply.throw("No sound name provided to delete.");
 
-			const { result } = await this.db.delete({ name: params.shift() });
-			if(result.ok)return reply.append(`Successfully deleted "${ toRemove } from the soundboard."`);
+			const success = await this.db.delete({ name: toRemove });
+			if(success)return reply.append(`Successfully deleted "${ toRemove }" from the soundboard.`);
 			reply.throw(`There is no such sound "${ toRemove }" in the sound board to delete.`);
 
 		}else if(sound === "list") {

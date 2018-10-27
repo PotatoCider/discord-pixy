@@ -15,7 +15,6 @@ module.exports = class Play extends Command {
 
 	async run(msg, query, reply) { 
 		if(!query)reply.throw("Please specify a video name!");
-		// Preconnect.
 		const player = msg.guild.player,
 			connecting = player.notify(reply).connect(msg.member, msg.guild);
 
@@ -30,7 +29,7 @@ module.exports = class Play extends Command {
 			selected = await this.selection(results, msg, reply);
 			reply = reply.next;
 			if(selected === "cancel") {
-				player.cleanup(false);
+				if(!player.dispatcher)player.cleanup(false);
 				return reply.append("Selection cancelled.").delete(5);
 			}
 		} else {

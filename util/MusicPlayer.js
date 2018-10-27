@@ -6,8 +6,11 @@ module.exports = class MusicPlayer extends Array {
 
 		this.self = self;
 
-		self.client.on("voiceStateUpdate", (oldMember, member) => {
-			if(member.voiceChannel && this.joined)this.joined(member);
+		self.client.on("voiceStateUpdate", (oldMember, member) => { // Only for one guild for now. Need to be ported to Self.js
+			if(!member.voiceChannel)return;
+			if(this.joined) {
+				this.joined(member);
+			}
 		})
 	}
 	add(item) {
@@ -21,13 +24,13 @@ module.exports = class MusicPlayer extends Array {
 		if(!(items instanceof Array))items = [ items ];
 		for(let i = 0; i < items.length; i++) {
 			if(items[i].live && !force)continue;
-			items[i].stream = ytdl(items[i].url);
+			items[i].stream = this.ytdl(items[i].url);
 		}
 		return this;
 	}
 
-	ytdl(item) {
-		return ytdl(item.url);
+	ytdl(item, opts = { filter: "audioonly" }) {
+		return ytdl(item.url || item, opts);
 	}
 
 	async play(reason) { 
@@ -64,7 +67,7 @@ module.exports = class MusicPlayer extends Array {
 
 	playSound(url) {
 		if(this.nowPlaying)this.dispatcher.end("sound");
-		this.soundStream = ytdl(url, { filter: "audioonly" });
+		this.soundStream = this.ytdl(url);
 		this.dispatcher = this.connection.playStream(this.soundStream);
 		this.dispatcher.once("end", () => {
 			if(this.nowPlaying)return this.connection.playStream(this.stream);
@@ -104,6 +107,7 @@ module.exports = class MusicPlayer extends Array {
 	async cleanup(queue = true) {
 		if(this.vc)await this.vc.leave();
 		if(this.stream)this.stream.destroy();
+		if(this.soundStream)this.soundStream.destroy();
 		if(queue)this.length = 0;
 		this.nowPlaying = this.dispatcher = this.reply = this.connection = this.stream = null;
 		return this;
