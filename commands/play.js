@@ -16,7 +16,7 @@ module.exports = class Play extends Command {
 	async run(msg, query, reply) { 
 		if(!query)reply.throw("Please specify a video name!");
 		const player = msg.guild.player,
-			connecting = player.notify(reply).connect(msg.member, msg.guild);
+			connected = player.notify(reply).connect(msg.member, msg.guild);
 
 		let selected;
 		if(!this.utils.ytdl.validateURL(query)) {
@@ -28,8 +28,13 @@ module.exports = class Play extends Command {
 			}
 			selected = await this.selection(results, msg, reply);
 			reply = reply.next;
+			for(let i = 0; i < results.length; i++) { // Cleanup preload
+				if(selected.index && i === selected.index)continue;
+				results[i].stream.destroy();
+			}
 			if(selected === "cancel") {
 				if(!player.dispatcher)player.cleanup(false);
+				selected.stream.destroy();
 				return reply.append("Selection cancelled.").delete(5);
 			}
 		} else {
@@ -39,7 +44,7 @@ module.exports = class Play extends Command {
 
 		reply.append(`:arrow_right: | Added **${ selected.title }** (${ selected.duration }) to queue.`).send();
 		if(!msg.member.voiceChannel)player.reply.send();
-		await connecting;
+		await connected;
 		player.add(selected);
 	}
 
@@ -57,6 +62,8 @@ module.exports = class Play extends Command {
 		}
 		const m = await reply.await();
 		if(!m)reply.next.delete(10).throw("Selection timed out.");
-		return m.content === "cancel" ? "cancel" : items[m.content - 1];
+		const item = items[m.content - 1] || {};
+		item.index = m.content - 1;
+		return m.content === "cancel" ? "cancel" : item;
 	}
 }	

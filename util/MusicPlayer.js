@@ -78,7 +78,7 @@ module.exports = class MusicPlayer extends Array {
 	}
 
 	async connect(member, guild) {
-		if(this.connection)return;
+		if(this.connection)return this;
 		if(member.user) {
 			this.member = member;
 			this.vc = member.voiceChannel;

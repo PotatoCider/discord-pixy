@@ -25,8 +25,8 @@ module.exports = class Silent extends Command {
 		}
 		if(state)msg.delete();
 		await this.db.setCollection("users").update({ id: msg.author.id }, { silentMode: state });
-		msg.author.silentMode = state;
 		reply.channel = msg.author;
-		reply.append(`Silent mode is now ${ state ? "on" : "off" }.`).delete(60);
+		reply.append(`Silent mode is ${ msg.author.silentMode === state ? "already" : "now" } ${ state ? "on" : "off" }.`).delete(60);
+		msg.author.silentMode = state;
 	}
 }	
