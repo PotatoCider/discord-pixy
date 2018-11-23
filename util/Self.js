@@ -2,13 +2,14 @@ const
 	[ _, { Client }, EventEmitter, fs, Constants, Helpers, loadModules, errorHandler, Database, MusicPlayer ] = 
 	require("./loadModules")("../setup", "discord.js", "events", "fs", "Constants", "Helpers", "loadModules", "error", "Database", "MusicPlayer");
 
-module.exports = class Self extends EventEmitter {
+module.exports = class Self extends EventEmitter { // Todo: convert object to Map system.
 	constructor() {
 		super();
 
 		this.client = new Client();
 		this.guilds = {};
 		this.commands = {};
+		this.handlers = {};
 		this.prefix = process.env.PREFIX;
  		this.production = process.env.PRODUCTION === "TRUE";
 		this.set = false;
@@ -35,12 +36,6 @@ module.exports = class Self extends EventEmitter {
 
 		this.init = new Promise(resolve => this.once("set", resolve));
 
-		this.start().then(() => {
-			this.emit("set");
-			this.set = true;
-			console.log(`${ this.client.user.username } is online!`);
-		});
-
 	}
 
 	setMessage(msg) {
@@ -49,11 +44,24 @@ module.exports = class Self extends EventEmitter {
 		msg.guild.player = msg.guild.s.player;
 	}
 
+	async handleClient() {
+		this._handlers = this._handlers || await this.helpers.readdir("handlers");
+
+		const loading = [];
+		for(let i = 0; i < this._handlers.length; i++) {
+			loading[i] = new (require(`../handlers/${ this._handlers[i] }`))(this);
+		}
+		await Promise.all(loading);
+	}
+
 	async start() {
 		this.db = await new Database(process.env.MONGODB_URI, process.env.MONGODB_URI.split("/").pop(), this).init;
 		console.log("Database connected.");
-		await Promise.all([this.login(), this.loadCommands("commands")]);
+		await Promise.all([this.login(), this.loadCommands("commands"), this.handleClient()]);
 		await this.loadGuilds();
+		this.emit("set");
+		this.set = true;
+		console.log(`${ this.client.user.username } is online!`);
 	}
 
 	async loadGuilds() {
@@ -64,10 +72,11 @@ module.exports = class Self extends EventEmitter {
 	}
 	
 	async loadCommands(path, reload) {
-		const cmds = this._cmds = this._cmds || fs.readdirSync(path).filter(cmd => cmd.endsWith(".js")),
-			loading = [];
-		for(let i = 0; i < cmds.length; i++){
-			loading[i] = this.loadCommand(`../${ path }/${ cmds[i] }`, reload);
+		this._cmds = this._cmds || (await this.helpers.readdir(path)).filter(cmd => cmd.endsWith(".js"));
+
+		const loading = [];
+		for(let i = 0; i < this._cmds.length; i++){
+			loading[i] = this.loadCommand(`../${ path }/${ this._cmds[i] }`, reload);
 		}
 
 		if(!this.production && !this.set){

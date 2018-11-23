@@ -1,41 +1,4 @@
 const Self = require("./util/Self"),
-	Message = require("./util/Message"),
-	self = new Self(),
-	prefix = self.prefix;
+	self = new Self();
 
-self.client.on("message", async msg => {
-	await self.init;
-	if(!msg.content.startsWith(prefix) || msg.author.bot)return;
-
-	const channel = msg.channel,
-		content = msg.content,
-		name = content.slice(prefix.length, ~(~content.indexOf(" ", prefix.length) || ~content.length)).toLowerCase(),
-		cmd = self.commands[name];
-	if(!cmd)return;
-	if(cmd.admin && !self.helpers.isAdmin(msg.author))return;
-	await self.db.checkUser(msg.author);
-	if(msg.author.silentMode)msg.delete();
-	if(cmd.requiresGuild && !msg.guild)return channel.send("This command can only be used in Paragon Xenocide.");
-
-	const params = content.slice(prefix.length + name.length).trim().split(/ +/g);
-	let reply = new Message(channel, { del: cmd.del });
-	self.setMessage(msg);
-	const out = await cmd.run(msg, cmd.messageSplit ? params : params.join(" "), reply)
-	.catch(err => {
-		if(err instanceof Message)return err;
-		self.errorHandler(err);
-	});
-	
-	if(typeof out === "string")return console.warn("Deprecated: return msg.content.");
-	if(out instanceof Message && !out.sent)return out.send();
-	while(reply) {
-		if(!reply.sent && (reply.content || reply.embed))reply.send();
-		reply = reply.next;
-	}
-})
-
-.on("guildMemberAdd", mem => {
-	const guild = mem.guild,
-		channel = guild.channels.find(ch => ch.name === "welcome");
-	channel.send(`<@${ mem.id }>, Welcome to Paragon Xenocide! You are the ${ guild.memberCount }th user!`);
-});
+self.start();

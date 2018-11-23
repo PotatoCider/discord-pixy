@@ -1,18 +1,23 @@
-const Constants = require("./Constants"),
-	Embed = require("./Embed"),
+const [ Constants, Embed, fs, util ] = require("./loadModules")("Constants", "Embed", "fs", "util"),
 	months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-let self;
-
 module.exports = class Helpers {
-	constructor(s) {
-		self = s;
+	constructor(self) {
+		this.self = self;
+	}
+
+	readdir(path, opts) {
+		return this.promisify(fs.readdir)(path, opts);
+	}
+
+	promisify(fn) {
+		return util.promisify(fn);
 	}
 
 	fetchUser(id) {
 		id = this.resolveMention(id, "user") || id;
 		if(!id || isNaN(id))return Promise.resolve(null);
-		return self.client.fetchUser(id);
+		return this.self.client.fetchUser(id);
 	}
 
 	async fetchMember(id, guild) {

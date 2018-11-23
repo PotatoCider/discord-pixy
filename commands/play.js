@@ -29,7 +29,7 @@ module.exports = class Play extends Command {
 			selected = await this.selection(results, msg, reply);
 			reply = reply.next;
 			for(let i = 0; i < results.length; i++) { // Cleanup preload
-				if(selected.index && i === selected.index)continue;
+				if(selected.index && i === selected.index || results[i].live)continue;
 				results[i].stream.destroy();
 			}
 			if(selected === "cancel") {
