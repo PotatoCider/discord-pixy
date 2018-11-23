@@ -13,7 +13,7 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 	}
 
 	async handle(mem) {
-		const channel = mem.guild.channels.find(ch => ch.name === (self.production ? "festive_café_lounge" : "testing")),
+		const channel = mem.guild.channels.find(ch => ch.name === (this.self.production ? "festive_café_lounge" : "testing")),
 			image = this.welcImage.clone(),
 			avatar = await Jimp.read(mem.user.displayAvatarURL);
 
