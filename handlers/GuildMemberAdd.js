@@ -17,7 +17,7 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 			image = this.welcImage.clone(),
 			avatar = await Jimp.read(mem.user.displayAvatarURL);
 
-		avatar.resize(300, 300);
+		avatar.resize(290, 290);
 		image.composite(avatar, 407, 248, { mode: Jimp.BLEND_DESTINATION_OVER });
 
 		const width = Jimp.measureText(this.font, mem.user.tag);
