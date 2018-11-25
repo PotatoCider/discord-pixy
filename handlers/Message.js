@@ -10,6 +10,7 @@ module.exports = class Message extends ClientHandler {
 
 	async handle(msg) {
 		await self.init;
+		self.db.checkUser(msg.author);
 		if(!msg.content.startsWith(self.prefix) || msg.author.bot)return;
 
 		const channel = msg.channel,
@@ -18,7 +19,7 @@ module.exports = class Message extends ClientHandler {
 			cmd = self.commands[name];
 		if(!cmd)return;
 		if(cmd.admin && !self.helpers.isAdmin(msg.author))return;
-		await self.db.checkUser(msg.author);
+		await msg.author.cached;
 		if(msg.author.silentMode)msg.delete();
 		if(cmd.requiresGuild && !msg.guild)return channel.send("This command can only be used in Paragon Xenocide.");
 

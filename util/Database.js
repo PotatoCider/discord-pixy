@@ -10,14 +10,17 @@ module.exports = class Database {
 
 	async checkUser(user) {
 		if(user.cached)return;
+		let resolve;
+		user.cached = new Promise(res => resolve = res);
 		const found = await this.users.findOne({ id: user.id });
 		if(found) {
 			Object.assign(user, found);
-			user.cached = true;
+			resolve(true);
 			return { silentMode: user.silentMode, new: false };
 		}
 		const result = await this.users.insertOne({ id: user.id, silentMode: false });
 		user.silentMode = false;
+		resolve(true);
 		return { silentMode: false, new: true };
 	}
 
