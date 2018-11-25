@@ -27,7 +27,7 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 		image.print(this.font, ~~(552 - width / 2), 635, mem.user.tag);
 
 		const imageBuffer = await image.getBufferAsync("image/png");
-		if()
+		
 		channel.send(`Welcome to ๖̶̶̶ζ͜͡Paragon ${ Math.random() < 0.05 ? "G" : "X" }enocide, ${ mem }.`, { files: [ { attachment: imageBuffer, name: "welcome.png" } ] });
 	}
 }
