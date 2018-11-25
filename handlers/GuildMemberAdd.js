@@ -14,7 +14,7 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 	}
 
 	async handle(mem) {
-		if()
+		
 
 		const channel = this.self.production ? mem.guild.channels.get("355563483783364612") : mem.guild.channels.find(ch => ch.name ===	"testing"),
 			image = this.welcImage.clone(),
