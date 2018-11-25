@@ -10,7 +10,7 @@ module.exports = class Message extends ClientHandler {
 
 	async handle(msg) {
 		await self.init;
-		self.db.checkUser(msg.author);
+		self.db.updateUser(msg.author);
 		if(!msg.content.startsWith(self.prefix) || msg.author.bot)return;
 
 		const channel = msg.channel,

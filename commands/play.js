@@ -34,7 +34,6 @@ module.exports = class Play extends Command {
 			}
 			if(selected === "cancel") {
 				if(!player.dispatcher)player.cleanup(false);
-				selected.stream.destroy();
 				return reply.append("Selection cancelled.").delete(5);
 			}
 		} else {

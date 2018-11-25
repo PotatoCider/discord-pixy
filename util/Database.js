@@ -8,7 +8,7 @@ module.exports = class Database {
 		this.self = self;
 	}
 
-	async checkUser(user) {
+	async updateUser(user) {
 		if(user.cached)return;
 		let resolve;
 		user.cached = new Promise(res => resolve = res);
@@ -28,6 +28,7 @@ module.exports = class Database {
 		this.client = await mongo.connect(this.url, { useNewUrlParser: true }).catch(err => console.log(err));
 		this.db = this.client.db(this.dbName);
 		this.users = this.db.collection("users");
+		this.guilds = this.db.collection("guilds");
 
 		return this;
 	}
