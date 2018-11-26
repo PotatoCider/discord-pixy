@@ -38,7 +38,7 @@ module.exports = class Play extends Command {
 			}
 		} else {
 			[ selected ] = await this.utils.youtube.fetchVideoInfo(this.utils.ytdl.getURLVideoID(query));
-			selected.duration = this.helpers.resolveDuration({ iso: results[i].duration, yt: true });
+			selected.duration = this.helpers.resolveDuration({ iso: selected.duration, yt: true });
 		}
 
 		reply.append(`:arrow_right: | Added **${ selected.title }** (${ selected.duration }) to queue.`).send();
