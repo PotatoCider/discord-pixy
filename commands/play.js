@@ -52,7 +52,7 @@ module.exports = class Play extends Command {
 			title: `Reply with a song number "1-${ items.length }". Reply "cancel" to cancel selection.`,
 			author: msg.member,
 			thumbnail: this.Constants.images.music,
-			footer: "Selection timeout in 30 seconds."
+			footer: "Selection timeout in 20 seconds."
 		}).setList();
 
 		for(let i = 0; i < items.length; i++) {
@@ -60,7 +60,7 @@ module.exports = class Play extends Command {
 			reply.append(`[**${ title }**](${ url }) **(${ duration })**`);
 		}
 		const m = await reply.await();
-		if(!m)reply.next.delete(10).throw("Selection timed out.");
+		if(!m)reply.next.delete(20).throw("Selection timed out.");
 		const item = items[m.content - 1] || {};
 		item.index = m.content - 1;
 		return m.content === "cancel" ? "cancel" : item;

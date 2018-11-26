@@ -9,6 +9,6 @@ module.exports = err => {
 	)return;
 	
 	if(process.env.PRODUCTION === "TRUE")return console.log(err);
-	fs.appendFileSync("log.txt", `${ util.inspect(err || err.stack) }\nMessage: ${ err.message }\nCode: ${ err.code }\nDate: ${ Date() }\n\n`);
+	fs.appendFile("log.txt", `${ util.inspect(err || err.stack) }\nMessage: ${ err.message }\nCode: ${ err.code }\nDate: ${ Date() }\n\n`, err => { if(err)throw err; });
 	console.log("log updated");
 }
