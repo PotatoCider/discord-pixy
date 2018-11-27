@@ -1,5 +1,5 @@
 const ClientHandler = require("../util/ClientHandler"),
-	fontCodes = new Set(require("../assets/font.json")),
+	fontCodes = new Set(require("../assets/font.json").concat(32)),
 	Jimp = require("jimp");
 
 module.exports = class GuildMemberAdd extends ClientHandler {
@@ -15,8 +15,6 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 	}
 
 	async handle(mem) {
-		
-
 		const channel = this.self.production ? mem.guild.channels.get("355563483783364612") : mem.guild.channels.find(ch => ch.name ===	"testing"),
 			image = this.welcImage.clone(),
 			avatar = await Jimp.read(mem.user.displayAvatarURL);

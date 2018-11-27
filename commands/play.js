@@ -22,6 +22,7 @@ module.exports = class Play extends Command {
 		if(!this.utils.ytdl.validateURL(query)) {
 			reply.collect(m => m.content >= 1 && m.content <= 5 || m.content === "cancel", 35);
 			const results = await this.utils.youtube.searchInfo(query, { maxResults: 5 });
+			if(!results.length)return reply.append("No results found.").delete(5);
 			player.preload(results);
 			for(let i = 0; i < results.length; i++) {
 				results[i].duration = results[i].live ? "Live" : this.helpers.resolveDuration({ iso: results[i].duration, yt: true });
