@@ -8,7 +8,7 @@ module.exports = err => {
 		err.message === "Unknown Message"
 	)return;
 	
-	if(process.env.PRODUCTION === "TRUE")return console.log(err);
+	if(process.env.PRODUCTION === "TRUE" || true)return console.log(err);
 	fs.appendFile("log.txt", `${ util.inspect(err || err.stack) }\nMessage: ${ err.message }\nCode: ${ err.code }\nDate: ${ Date() }\n\n`, err => { if(err)throw err; });
 	console.log("log updated");
 }

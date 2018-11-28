@@ -5,7 +5,7 @@
 config.json
 
 # Run 
-start_bot.bat
+*.bat
 
 # Logs
 log.txt

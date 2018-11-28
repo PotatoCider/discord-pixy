@@ -49,7 +49,7 @@ module.exports = class Helpers {
 
 	getEmbed(details = {}) {
 		if(details instanceof Embed.RichEmbed)return details;
-		const { file, author = {}, fields = [], color = "RANDOM", description, footer = {}, image, thumbnail, timestamp, title, url } = details;
+		const { file, author = {}, fields = [], color = "#ffb6c1", description, footer = {}, image, thumbnail, timestamp, title, url } = details;
 
 		return new Embed()
 		.attachFile(file)

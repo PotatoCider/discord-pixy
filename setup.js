@@ -1,7 +1,7 @@
 const errorHandler = require("./util/error.js");
 process.on("unhandledRejection", errorHandler)
 .on("uncaughtException", errorHandler);
-
+if(process.env.PRODUCTION !== "TRUE")require("longjohn");
 try {
 	const { prefix, token, mongodb_path, yt_api_key } = require("./config.json");
 	process.env.PREFIX = prefix;

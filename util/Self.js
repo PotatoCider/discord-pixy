@@ -35,7 +35,7 @@ module.exports = class Self extends EventEmitter { // Todo: convert object to Ma
 		.on("error", errorHandler);
 
 		this.init = new Promise(resolve => this.once("set", resolve));
-
+		this.logined = new Promise(resolve => this.once("login", resolve));
 	}
 
 	setMessage(msg) {
@@ -55,10 +55,12 @@ module.exports = class Self extends EventEmitter { // Todo: convert object to Ma
 	}
 
 	async start() {
+		this.login();
 		this.db = await new Database(process.env.MONGODB_URI, process.env.MONGODB_URI.split("/").pop(), this).init;
 		console.log("Database connected.");
-		await Promise.all([this.login(), this.loadCommands("commands"), this.handleClient()]);
+		await Promise.all([this.logined, this.loadCommands("commands"), this.handleClient()]);
 		await this.loadGuilds();
+		await this.db.guildSync;
 		this.emit("set");
 		this.set = true;
 		console.log(`${ this.client.user.username } is online!`);
@@ -109,7 +111,6 @@ module.exports = class Self extends EventEmitter { // Todo: convert object to Ma
 	async login() {
 		await this.client.login(process.env.TOKEN);
 		
-		this.logined = true;
 		this.emit("login");
 		console.log("Login successful.");
 	}
