@@ -4,7 +4,7 @@ module.exports = class GuildMemberRemove extends ClientHandler {
 	constructor(self) {
 		super(self, "guildMemberRemove");
 		this.guilds = self.db.collection("guilds");
-		this.init = this.flagMissedMembers();
+		this.init = self.production && this.flagMissedMembers();
 	}
 
 	async flagMissedMembers() {

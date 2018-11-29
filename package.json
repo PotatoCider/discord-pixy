@@ -18,11 +18,11 @@
     "libsodium-wrappers": "^0.7.3",
     "longjohn": "^0.2.12",
     "mongodb": "^3.1.1",
-    "node-opus": "^0.2.9",
+    "node-opus": "^0.3.1",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
     "urban-dictionary": "^2.2.1",
     "uws": "^9.148.0",
-    "ytdl-core": "^0.24.0"
+    "ytdl-core": "^0.28.0"
   }
 }

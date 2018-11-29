@@ -6,7 +6,7 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 	constructor(self) {
 		super(self, "guildMemberAdd");
 		this.guilds = self.db.collection("guilds");
-		this.init = Promise.all([this.preloadAssets(), this.addMissedMembers()]);
+		this.init = Promise.all([this.preloadAssets(), this.production && this.addMissedMembers()]);
 	}
 
 	async addMissedMembers() {
