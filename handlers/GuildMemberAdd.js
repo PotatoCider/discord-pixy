@@ -27,8 +27,11 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 	}
 
 	async preloadAssets() {
+		let resolve;
+		this.loadedAssets = new Promise(res => resolve = res);
 		this.welcImage = await Jimp.read("assets/welcome.png");
 		this.font = await Jimp.loadFont("assets/font.fnt");
+		resolve();
 	}
 
 	async addToDatabase(mem) {
