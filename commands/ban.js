@@ -20,7 +20,7 @@ module.exports = class Ban extends Command {
 		if(!member)reply.throw("Invalid guild member.");
 
 		await member.ban(reason);
-
+		reply.channel = this.self.production ? msg.guild.channels.get("416248602227376128") : msg.guild.channels.find(ch => ch.name === "testing");
 		reply.append(`Successfully banned <@${ member.id }>${ reason ? ` due to **${ reason }**` : "" }.`);
 	}
 }
