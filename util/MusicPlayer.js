@@ -24,12 +24,13 @@ module.exports = class MusicPlayer extends Array {
 		if(!(items instanceof Array))items = [ items ];
 		for(let i = 0; i < items.length; i++) {
 			if(items[i].live && !force)continue;
-			items[i].stream = this.ytdl(items[i].url);
+			items[i].stream = this.ytdl(items[i]);
 		}
 		return this;
 	}
 
 	ytdl(item, opts = { filter: "audioonly" }) {
+		if(item.live)opts = {};
 		return ytdl(item.url || item, opts);
 	}
 
