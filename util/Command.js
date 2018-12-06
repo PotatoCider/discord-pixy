@@ -23,12 +23,7 @@ module.exports = class Command {
 		if(!(self && name && this.aliases instanceof Array))throw new Error("Invalid parameters.");
 		const commands = this.parent.commands;
 		commands[name] = this;
-		for(let i = 0; i < this.aliases.length; i++){
-			const alias = this.aliases[i];
-			if(!commands[alias])Object.defineProperty(commands, alias, {
-				get() { return this[name]; }
-			});
-		}
+		this.aliases.forEach(alias => commands[alias] = this);
 
 		if(!utils)return;
 		let utilNames;
@@ -54,16 +49,20 @@ module.exports = class Command {
 	}
 
 	detailedHelp() {
-		return `**Name**: ${ this.name }\n\n**Usage${ this.usages.length > 1 ? "s" : "" }**: \n${ this.how(true) }\n\n${ this.detailed }`;
+		return `**Name**: ${ this.name }\n\n**Usage${ this.usages.length > 1 ? "s" : "" }**: \n${ this.how() }\n${ this.detailed }\n\n**Aliases**: ${ this.aka() }`;
 	}
 
-	how(prefix = false) {
+	how(prefix = true, name = this.name) {
 		let content = "";
 		if(this.usages.length === 0)throw new Error("Usages not added.");
 		for(let i = 0; i < this.usages.length; i++) {
-			content += `\`${ prefix ? this.self.prefix : "" }${ this.name } ${ this.usages[i] }\`\n`;
+			content += `\`${ prefix ? this.self.prefix : "" }${ name } ${ this.usages[i] }\`\n`;
 		}
 		return content;
+	}
+
+	aka() {
+		return `\`${ this.aliases.join(", ") }\``
 	}
 
 	run() { console.warn(this.name, "has no run method!"); }

@@ -15,17 +15,8 @@ module.exports = class MusicPlayer extends Array {
 	}
 	add(item) {
 		this.push(item);
-		if(!item.stream || item.stream._writableState.ending)this.preload(item);
+		if(!item.stream)item.stream = this.ytdl(item);
 		if(!this.nowPlaying)this.play();
-		return this;
-	}
-
-	preload(items, force) {
-		if(!(items instanceof Array))items = [ items ];
-		for(let i = 0; i < items.length; i++) {
-			if(items[i].live && !force)continue;
-			items[i].stream = this.ytdl(items[i]);
-		}
 		return this;
 	}
 
@@ -39,7 +30,6 @@ module.exports = class MusicPlayer extends Array {
 		if(!this.connection)throw new Error("Not connected to vc to play.");
 
 		this.nowPlaying = this.shift();
-		if(this.nowPlaying.live)this.preload(this.nowPlaying, true);
 		this.stream = this.nowPlaying.stream;
 		const start = Date.now();
 		this.dispatcher = this.connection.playStream(this.stream);

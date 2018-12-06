@@ -32,8 +32,8 @@ module.exports = class Pages extends Array {
 		this.sent = this[0].send(this.channel);
 		this.sent = await this.sent;
 		this.index = 0;
-		const react = this.channel.guild.s.reactions;
-		react[this.sent.id] = async (reaction, user) => {
+
+		this.channel.guild.s.reactions[this.sent.id] = async (reaction, user) => {
 			switch(reaction.emoji.name) {
 				case "◀":
 					this.flip(-1, true);

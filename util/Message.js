@@ -1,4 +1,3 @@
-const Embed = require("./Embed");
 module.exports = class Message {
 	constructor(channel, { content, del, list, options, delimiter, embed } = {}) {
 		if(!channel)throw new Error("Missing channel");
@@ -82,13 +81,14 @@ module.exports = class Message {
 		return msg;
 	}
 
-	collect(val, time, inMs = false) {
+	collect(val, time, opts, inMs = false) {
 		if(!time)throw new Error("Missing argument: time.");
 		if(!inMs)time *= 1000;
 		let filter = val;
 		if(typeof filter === "string")filter = m => m.content === val;
 		if(filter instanceof Array)filter = m => val.includes(m);
-		this.collector = this.channel.createMessageCollector(filter, { time });
+		this.collector = this.channel.createMessageCollector(filter, Object.assign({}, opts, { time }));
+		return this;
 	}
 
 	async await(del = true, inMs = false) {
@@ -115,6 +115,10 @@ module.exports = class Message {
 		this.append("**Error**: " + err);
 		this.error = true;
 		throw this;
+	}
+
+	invalidUsage(cmd, name) {
+		this.throw(`Invalid usage.\n\n Proper Usage: ${ cmd.how(name) }`);
 	}
 
 	opts(opts) {

@@ -13,8 +13,10 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 		const entries = await this.guilds.getAll();
 
 		await this.self.logined;
-		const loading = entries.map(entry => {
-			const members = this.self.client.guilds.get(entry.id).members.clone();
+		const loading = entries.map(async (entry) => {
+			const guild = this.self.client.guilds.get(entry.id);
+			await guild.fetchMembers();
+			const members = guild.members.clone();
 			members.sweep(member => entry.memberHistory[member.id]);
 			const guildDoc = {};
 			if(members.size === 0)return;

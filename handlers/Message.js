@@ -26,6 +26,7 @@ module.exports = class Message extends ClientHandler {
 		const params = content.slice(self.prefix.length + name.length).trim().split(/ +/g);
 		let reply = new MessageUtil(channel, { del: cmd.del });
 		self.setMessage(msg);
+		msg.invokedBy = name;
 		const out = await cmd.run(msg, cmd.messageSplit ? params : params.join(" "), reply)
 		.catch(err => {
 			if(err instanceof MessageUtil)return err;
