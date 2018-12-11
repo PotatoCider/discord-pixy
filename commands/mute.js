@@ -43,6 +43,7 @@ module.exports = class Mute extends Command {
 	async run(msg, params, reply) {
 		const mention = params.shift(),
 			duration = this.getDuration(params.shift()),
+			forever = duration === "forever",
 			reason = params.join(" "),
 			[role, member] = await Promise.all([
 				this.getMutedRole(msg.guild, reply),
@@ -55,12 +56,12 @@ module.exports = class Mute extends Command {
 		if(member.roles.some(role => role.name === "Muted"))reply.throw("That member is already muted.");
 
 		await Promise.all([
-			this.setSchedule(msg.guild, member, msg.createdTimestamp + duration),
+			this.setSchedule(msg.guild, member, forever ? "forever" : msg.createdTimestamp + duration),
 			member.addRole(role, reason)
 		]);
-		const totalTime = duration !== "forever" && this.helpers.resolveDuration({ ms: duration, format: { s: 1, m: 1, h: 1, d: 1 } });
+		const totalTime = !forever && this.helpers.resolveDuration({ ms: duration, format: { s: 1, m: 1, h: 1, d: 1 } });
 
-		reply.append(`Successfully muted ${ member } for**${ totalTime ? " " + totalTime : "ever" }**${ reason ? ` due to **${ reason }**`: "" }.`);
+		reply.append(`Successfully muted ${ member } **for${ forever ? "ever" : " " + totalTime }**${ reason ? ` due to **${ reason }**`: "" }.`);
 	}
 
 	getDuration(time) {
