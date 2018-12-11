@@ -14,6 +14,13 @@ module.exports = class Helpers {
 		return util.promisify(fn);
 	}
 
+	promise() {
+		let resolve;
+		const p = new Promise(res => resolve = res);
+		p.resolve = resolve;
+		return p;
+	}
+
 	fetchUser(id) {
 		id = this.resolveMention(id, "user") || id;
 		if(!id || isNaN(id))return Promise.resolve(null);
@@ -83,7 +90,18 @@ module.exports = class Helpers {
 		return prepend + text.slice(0, maxLen - 7 - prepend.length - append.length - link.length) + `(...)[${ link }]` + append;
 	}
 
-	resolveDuration({ ms = 0, s = 0, m = 0, h = 0, d = 0, iso, format, yt }) {
+	resolveDuration({ ms = 0, s = 0, m = 0, h = 0, d = 0, iso, getMs, format, yt }) {
+		ms = +ms;
+		s = +s;
+		m = +m;
+		h = +h;
+		if(getMs) {
+			h += d * 24;
+			m += h * 60;
+			s += m * 60;
+			ms += s * 1000;
+			return ms;
+		}
 		if(iso){
 			const time = iso.match(/P(?:(\d*)D)?T(?:(\d*)H)?(?:(\d*)M)?(?:(\d*)S)?/);
 			if(!time)throw new Error("Invaild params.");
@@ -92,13 +110,13 @@ module.exports = class Helpers {
 			m = ~~time[3] || 0;
 			s = ~~time[4] || 0;
 		}else{
-			s += ~~(ms / 1000);
+			s += Math.floor(ms / 1000);
 			ms %= 1000;
-			m += ~~(s / 60);
+			m += Math.floor(s / 60);
 			s %= 60;
-			h += ~~(m / 60);
+			h += Math.floor(m / 60);
 			m %= 60;
-			d += ~~(h / 24);
+			d += Math.floor(h / 24);
 			h %= 24;
 		}
 		if(yt){

@@ -71,9 +71,8 @@ module.exports = class UpdateRecords extends Command {
 		}
 		const name = recordChannel.name.split("_")
 		let [ totalWins, totalLosses ] = name.pop().split("-"),
-			won = forfeit || wins > losses,
 			score = "Draw";
-		if(won) {
+		if(wins > losses || forfeit) {
 			score = ++totalWins
 		} else if(losses > wins) {
 			score = ++totalLosses;

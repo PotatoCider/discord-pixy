@@ -1,12 +1,13 @@
 const ClientHandler = require("../util/ClientHandler"),
 	fontCodes = new Set(require("../assets/font.json").concat(32)), // spaces included.
-	Jimp = require("jimp");
+	Jimp = require("jimp"),
+	schedule = require("node-schedule");
 
 module.exports = class GuildMemberAdd extends ClientHandler {
 	constructor(self) {
 		super(self, "guildMemberAdd");
 		this.guilds = self.db.collection("guilds");
-		this.init = Promise.all([this.preloadAssets(), this.production && this.addMissedMembers()]);
+		this.init = Promise.all([this.preloadAssets(), self.production && this.addMissedMembers()]);
 	}
 
 	async addMissedMembers() {
@@ -22,7 +23,7 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 			if(members.size === 0)return;
 			return members.map(mem => {
 				guildDoc[`memberHistory.${ mem.id }`] = { xp: 0, inGuild: true };
-				return this.welcome(mem);
+				return Promise.all([this.welcome(mem), this.checkState(mem)]);
 			}).concat(this.guilds.update({ id: entry.id }, guildDoc));
 		});
 		await Promise.all([].concat(...loading));
@@ -36,10 +37,21 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 		resolve();
 	}
 
+	async checkState(mem) {
+		const now = Date.now(),
+			doc = await this.guilds.getOne({ id: mem.guild.id, [`memberHistory.${ mem.id }.muted`]: { $exists: true } }, { [`memberHistory.${ mem.id }`]: 1 }),
+			unmuteTimestamp = doc.memberHistory[mem.id].muted;
+		if(!doc)return;
+		if(now >= unmuteTimestamp)return;
+
+		const muted = mem.guild.roles.find(role => role.name === "Muted");
+		await mem.addRole(muted, "member attempted to rejoin before the muted effect expired");
+	}
+
 	async addToDatabase(mem) {
 		const res = await this.guilds.getOne({ id: mem.guild.id }, { [`memberHistory.${ mem.id }.inGuild`]: 1 });
 		if(res.memberHistory[mem.id]) {
-			if(res.memberHistory[mem.id].inGuild){
+			if(!res.memberHistory[mem.id].inGuild){
 				this.guilds.update({ id: mem.guild.id }, { [`memberHistory.${ mem.id }.inGuild`]: true });
 			}
 			return false;
@@ -79,6 +91,7 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 
 	async handle(mem, force) {
 		if(mem.guild.id !== "346244476211036160")return;
+		this.checkState(mem);
 		const isNew = await this.addToDatabase(mem);
 		if(isNew || force)this.welcome(mem);
 	}

@@ -69,7 +69,7 @@ module.exports = class Self extends EventEmitter { // Todo: convert object to Ma
 	async loadGuilds() {
 		const ids = this.client.guilds.keyArray();
 		for(let i = 0; i < ids.length; i++) {
-			this.guilds[ids[i]] = { player: new MusicPlayer(this), reactions: {} };
+			this.guilds[ids[i]] = { player: new MusicPlayer(this), reactions: {}, muteJobs: {} };
 		}
 	}
 	
