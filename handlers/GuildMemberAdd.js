@@ -1,7 +1,6 @@
 const ClientHandler = require("../util/ClientHandler"),
 	fontCodes = new Set(require("../assets/font.json").concat(32)), // spaces included.
-	Jimp = require("jimp"),
-	schedule = require("node-schedule");
+	Jimp = require("jimp");
 
 module.exports = class GuildMemberAdd extends ClientHandler {
 	constructor(self) {
@@ -42,7 +41,7 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 			doc = await this.guilds.getOne({ id: mem.guild.id, [`memberHistory.${ mem.id }.muted`]: { $exists: true } }, { [`memberHistory.${ mem.id }`]: 1 }),
 			unmuteTimestamp = doc.memberHistory[mem.id].muted;
 		if(!doc)return;
-		if(now >= unmuteTimestamp)return;
+		if(unmuteTimestamp !== "forever" && now >= unmuteTimestamp)return;
 
 		const muted = mem.guild.roles.find(role => role.name === "Muted");
 		await mem.addRole(muted, "member attempted to rejoin before the muted effect expired");

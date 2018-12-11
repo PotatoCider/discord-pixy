@@ -33,10 +33,12 @@ module.exports = class Unmute extends Command {
 			const muted = members[i],
 				roles = muted.roles.filter(role => role.name.toLowerCase().includes("mute"));
 			if(!all && roles.size === 0)reply.throw("Member is not muted!");
-			muteJobs[muted.id].cancel();
-			muteJobs[muted.id] = null;
 			doc[`memberHistory.${ muted.id }.muted`] = "";
 			pending[i] = muted.removeRoles(roles, reason);
+
+			if(!muteJobs[muted.id])continue;
+			muteJobs[muted.id].cancel();
+			muteJobs[muted.id] = null;
 		}
 		await Promise.all(pending);
 		await this.guilds.update({ id: msg.guild.id }, doc, "unset");
