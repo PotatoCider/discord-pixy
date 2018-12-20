@@ -17,7 +17,7 @@ module.exports = class GuildMemberRemove extends ClientHandler {
 				toFlag = memberHistory.filter(mem => !inGuild.has(mem.id) && mem.inGuild),
 				guildDoc = {};
 			if(toFlag.length === 0)return;
-			console.log(toFlag);
+			
 			toFlag.forEach(mem => guildDoc[`memberHistory.${ mem.id }.inGuild`] = false);
 			return this.guilds.update({ id: entry.id }, guildDoc);
 		});

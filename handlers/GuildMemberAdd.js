@@ -29,11 +29,10 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 	}
 
 	async preloadAssets() {
-		let resolve;
-		this.loadedAssets = new Promise(res => resolve = res);
+		this.loadedAssets = this.self.helpers.promise();
 		this.welcImage = await Jimp.read("assets/welcome.png");
 		this.font = await Jimp.loadFont("assets/font.fnt");
-		resolve();
+		this.loadedAssets.resolve();
 	}
 
 	async checkState(mem) {
@@ -61,7 +60,7 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 	}
 
 	async welcome(mem) { // TODO: Move code to modules that has names related *to what they do* 
-		//await this.loadedAssets;
+		await this.loadedAssets;
 		const channel = this.self.production ? mem.guild.channels.get("355563483783364612") : mem.guild.channels.find(ch => ch.name ===	"testing"),
 			image = this.welcImage.clone(),
 			avatar = await Jimp.read(mem.user.displayAvatarURL);
@@ -91,8 +90,9 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 
 	async handle(mem, force) {
 		if(mem.guild.id !== "346244476211036160")return;
-		this.checkState(mem);
+		
 		const isNew = await this.addToDatabase(mem);
-		if(isNew || force)this.welcome(mem);
+		if(isNew || force)return this.welcome(mem);
+		this.checkState(mem);
 	}
 }
