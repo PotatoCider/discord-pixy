@@ -38,9 +38,9 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 
 	async checkState(mem) {
 		const now = Date.now(),
-			doc = await this.guilds.getOne({ id: mem.guild.id, [`memberHistory.${ mem.id }.muted`]: { $exists: true } }, { [`memberHistory.${ mem.id }`]: 1 }),
-			unmuteTimestamp = doc.memberHistory[mem.id].muted;
+			doc = await this.guilds.getOne({ id: mem.guild.id, [`memberHistory.${ mem.id }.muted`]: { $exists: true } }, { [`memberHistory.${ mem.id }`]: 1 });
 		if(!doc)return;
+		const unmuteTimestamp = doc.memberHistory[mem.id].muted;
 		if(unmuteTimestamp !== "forever" && now >= unmuteTimestamp)return;
 
 		const muted = mem.guild.roles.find(role => role.name === "Muted");
@@ -62,7 +62,7 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 
 	async welcome(mem) { // TODO: Move code to modules that has names related *to what they do* 
 		await this.loadedAssets;
-		const channel = this.self.production ? mem.guild.channels.get("355563483783364612") : mem.guild.channels.find(ch => ch.name ===	"testing"),
+		const channel = false && this.self.production ? mem.guild.channels.get("355563483783364612") : mem.guild.channels.find(ch => ch.name ===	"testing"),
 			image = this.welcImage.clone(),
 			avatar = await Jimp.read(mem.user.displayAvatarURL);
 
