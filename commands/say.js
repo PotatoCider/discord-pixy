@@ -21,7 +21,7 @@ module.exports = class Say extends Command {
 			params.shift();
 			reply.channel = msg.guild.channels.get(channelId);
 		}
-		const files = msg.attachments.count > 0 ? msg.attachments.map(attachment => ({ attachment: request(attachment.url), name: attachment.filename })) : [];
+		const files = msg.attachments.size > 0 ? msg.attachments.map(attachment => ({ attachment: request(attachment.url), name: attachment.filename })) : [];
 
 		reply.append(params.join(" ")).opts({ files }).send();
 	}
