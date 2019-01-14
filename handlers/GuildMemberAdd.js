@@ -62,7 +62,7 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 
 	async welcome(mem) { // TODO: Move code to modules that has names related *to what they do* 
 		await this.loadedAssets;
-		const channel = false && this.self.production ? mem.guild.channels.get("355563483783364612") : mem.guild.channels.find(ch => ch.name ===	"testing"),
+		const channel = this.self.production ? mem.guild.channels.get("355563483783364612") : mem.guild.channels.find(ch => ch.name ===	"testing"),
 			image = this.welcImage.clone(),
 			avatar = await Jimp.read(mem.user.displayAvatarURL);
 
