@@ -9,12 +9,13 @@ module.exports = class GuildMemberAdd extends ClientHandler {
 		this.init = Promise.all([this.preloadAssets(), self.production && this.addMissedMembers()]);
 	}
 
-	async addMissedMembers() {
+	async addMissedMembers() { // Add database guild exists.
 		const entries = await this.guilds.getAll();
 
 		await this.self.logined;
 		const loading = entries.map(async (entry) => {
 			const guild = this.self.client.guilds.get(entry.id);
+			if(!guild)return;
 			await guild.fetchMembers();
 			const members = guild.members.clone();
 			members.sweep(member => entry.memberHistory[member.id]);

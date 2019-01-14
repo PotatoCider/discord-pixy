@@ -13,7 +13,10 @@ module.exports = class GuildMemberRemove extends ClientHandler {
 		await this.self.handlers.guildMemberAdd.init;
 		const loading = entries.map(entry => {
 			const memberHistory = Object.keys(entry.memberHistory),
-				inGuild = this.self.client.guilds.get(entry.id).members.clone(),
+				guild = this.self.client.guilds.get(entry.id);
+			if(!guild)return;
+
+			const inGuild = guild.members.clone(),
 				toFlag = memberHistory.filter(mem => !inGuild.has(mem.id) && mem.inGuild),
 				guildDoc = {};
 			if(toFlag.length === 0)return;
