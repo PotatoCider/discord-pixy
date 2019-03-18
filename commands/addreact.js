@@ -20,8 +20,8 @@ module.exports = class AddReact extends Command {
 			this.removeReactor(user);
 			refreshed = true;
 		}
-		user.reactor = async (reaction, user) => {
-			if(user.id !== msg.author.id || !reaction.me)return;
+		user.reactor = async (reaction, u) => {
+			if(u.id !== user.id || !reaction.me)return;
 			await reaction.message.react(reaction.emoji);
 			reaction.remove(user);
 		};
