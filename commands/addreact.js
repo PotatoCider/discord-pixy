@@ -26,7 +26,7 @@ module.exports = class AddReact extends Command {
 			reaction.remove(user);
 		};
 		client
-		.on('messageReactionAdd', user.reactor);
+		.on('messageReactionAdd', user.reactor)
 		.setTimeout(() => this.removeReactor(msg.author), 3 * 60 * 1000);
 	}
 
