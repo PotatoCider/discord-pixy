@@ -45,7 +45,6 @@ module.exports = class AddReact extends Command {
 		}
 
 		this.addReactor(msg.author);
-		msg.author.
 		reply.append('Started reacting. Effect lasts for 3 mins');
 	}
 }	
