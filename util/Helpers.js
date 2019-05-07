@@ -95,13 +95,6 @@ module.exports = class Helpers {
 		s = +s;
 		m = +m;
 		h = +h;
-		if(getMs) {
-			h += d * 24;
-			m += h * 60;
-			s += m * 60;
-			ms += s * 1000;
-			return ms;
-		}
 		if(iso){
 			const time = iso.match(/P(?:(\d*)D)?T(?:(\d*)H)?(?:(\d*)M)?(?:(\d*)S)?/);
 			if(!time)throw new Error("Invaild params.");
@@ -118,6 +111,13 @@ module.exports = class Helpers {
 			m %= 60;
 			d += Math.floor(h / 24);
 			h %= 24;
+		}
+		if(getMs) {
+			h += d * 24;
+			m += h * 60;
+			s += m * 60;
+			ms += s * 1000;
+			return ms;
 		}
 		if(yt){
 			if(d)h += d * 24;

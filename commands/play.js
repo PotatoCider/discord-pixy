@@ -35,6 +35,7 @@ module.exports = class Play extends Command {
 			if(!results.length)return this.throwErr("No results found.", reply);
 
 			for(let i = 0; i < results.length; i++) {
+				//results[i].durationSeconds = results[i].live || this.helpers.resolveDuration({ iso: results[i].duration, getMs: true }) / 1000;
 				results[i].duration = results[i].live ? "Live" : this.helpers.resolveDuration({ iso: results[i].duration, yt: true });
 			}
 			selected = await this.selection(results, msg, reply);
