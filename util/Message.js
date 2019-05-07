@@ -1,3 +1,5 @@
+const Discord = require('discord.js');
+// commonly known as 'reply'
 module.exports = class Message {
 	constructor(channel, { content, del, list, options, delimiter, embed } = {}) {
 		if(!channel)throw new Error("Missing channel");
@@ -28,6 +30,12 @@ module.exports = class Message {
 			this.disablePrefix = false;
 			this.content += toAppend;
 		}
+		return this;
+	}
+
+	attach(file, name) {
+		if(!this.options.files)this.options.files = [];
+		this.options.files.push(new Discord.Attachment(file, name));
 		return this;
 	}
 

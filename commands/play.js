@@ -5,7 +5,7 @@ module.exports = class Play extends Command {
 		super({
 			name: "play",
 			desc: "Plays music from YouTube.",
-			usage: "<url>",
+			usage: "<query/url>",
 			requiresGuild: true,
 			aliases: ["p"],
 			utils: { ytdl: "ytdl-core", youtube: 1 },
@@ -18,30 +18,40 @@ module.exports = class Play extends Command {
 		const player = msg.guild.player,
 			connected = player.notify(reply).connect(msg.member, msg.guild);
 
+		const selected = await this.getVideoFromQuery(msg, query, reply);
+
+		reply.append(`:arrow_right: | Added **${ selected.title }** (${ selected.duration }) to queue.`).send();
+		if(!msg.member.voiceChannel)player.reply.send();
+		await connected;
+		player.add(selected);
+	}
+
+	async getVideoFromQuery(msg, query, reply) {
 		let selected;
 		if(!this.utils.ytdl.validateURL(query)) {
 			reply.collect(m => m.content >= 1 && m.content <= 5 || m.content === "cancel", 35);
+
 			const results = await this.utils.youtube.searchInfo(query, { maxResults: 5 });
-			if(!results.length)return reply.append("No results found.").delete(5);
+			if(!results.length)return this.throwErr("No results found.", reply);
+
 			for(let i = 0; i < results.length; i++) {
 				results[i].duration = results[i].live ? "Live" : this.helpers.resolveDuration({ iso: results[i].duration, yt: true });
 			}
 			selected = await this.selection(results, msg, reply);
 			reply = reply.next;
 			
-			if(selected === "cancel") {
-				if(!player.dispatcher)player.cleanup(false);
-				return reply.append("Selection cancelled.").delete(5);
-			}
+			if(selected === "cancel")return this.throwErr("Selection cancelled.", reply);
 		} else {
 			[ selected ] = await this.utils.youtube.fetchVideoInfo(this.utils.ytdl.getURLVideoID(query));
 			selected.duration = this.helpers.resolveDuration({ iso: selected.duration, yt: true });
 		}
+		return selected;
+	}
 
-		reply.append(`:arrow_right: | Added **${ selected.title }** (${ selected.duration }) to queue.`).send();
-		if(!msg.member.voiceChannel)player.reply.send();
-		await connected;
-		player.add(selected);
+	throwErr(err, reply) {
+		const player = reply.channel.guild.player
+		if(!player.dispatcher)player.cleanup(false);
+		return reply.throw(err).delete(5);
 	}
 
 	async selection(items, msg, reply) {

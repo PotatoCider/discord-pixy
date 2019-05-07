@@ -36,7 +36,7 @@ module.exports = class Message extends ClientHandler {
 		if(typeof out === "string")return console.warn("Deprecated: return msg.content.");
 		if(out instanceof MessageUtil && !out.sent)return out.send();
 		while(reply) {
-			if(!reply.sent && (reply.content || reply.embed))reply.send();
+			if(!reply.sent && (reply.content || reply.embed || reply.options.files))reply.send();
 			reply = reply.next;
 		}
 	}
