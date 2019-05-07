@@ -37,7 +37,7 @@ module.exports = class YoutubeDownload extends Command {
 				reply.new.attach(this.utils.fs.createReadStream(filename), `download.${ container }`).send()
 				.then(msg => {
 					msg.edit(`Time elapsed: ${ ((Date.now() - start) / 1000).toFixed(2) }s.`);
-					this.utils.fs.unlink(filename);
+					this.utils.fs.unlink(filename, () => { if(err)throw err; });
 				});
 			}
 		});
