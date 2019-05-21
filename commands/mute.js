@@ -28,13 +28,13 @@ module.exports = class Mute extends Command {
 				loading = Object.keys(entry.memberHistory).map(async (id) => {
 					const unmuteTimestamp = entry.memberHistory[id].muted;
 					if(!unmuteTimestamp || unmuteTimestamp === "forever")return;
-					if(Date.now() >= unmuteTimestamp - 1000)return this.setSchedule(guild, id, unmuteTimestamp, false);
+					if(Date.now() <= unmuteTimestamp - 1000)return this.setSchedule(guild, id, unmuteTimestamp, false);
 
 					doc[`memberHistory.${ id }.muted`] = "";
 					const member = await this.helpers.fetchMember(id, guild),
 						muted = guild.roles.find(role => role.name === "Muted");
-					if(!member || !member.roles.has(role))return;
-					await member.removeRole(role, "mute expired");
+					if(!member || !member.roles.has(muted))return;
+					await member.removeRole(muted, "mute expired");
 				});
 			if(Object.keys(doc).length > 0)loading.concat(this.guilds.update({ id: guild.id }, doc, "unset"));
 		});
