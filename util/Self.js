@@ -56,17 +56,19 @@ module.exports = class Self extends EventEmitter { // Todo: convert object to Ma
 
 	async start() {
 		this.login();
+		
 		this.db = await new Database(process.env.MONGODB_URI, process.env.MONGODB_URI.split("/").pop(), this).init;
 		console.log("Database connected.");
-		await Promise.all([this.logined, this.loadCommands("commands"), this.handleClient()]);
-		await this.loadGuilds();
-		await this.db.guildSync;
+
+		await Promise.all([this.logined, this.db.guildSync, this.loadCommands("commands"), this.handleClient(), this.loadGuilds()]);
+
 		this.emit("set");
 		this.set = true;
 		console.log(`${ this.client.user.username } is online!`);
 	}
 
 	async loadGuilds() {
+		await this.logined;
 		const ids = this.client.guilds.keyArray();
 		for(let i = 0; i < ids.length; i++) {
 			this.guilds[ids[i]] = { player: new MusicPlayer(this), reactions: {}, muteJobs: {} };
