@@ -40,7 +40,6 @@ module.exports = class Self extends EventEmitter { // Todo: convert object to Ma
 
 	setMessage(msg) {
 		msg.self = this;
-		msg.guild.s = this.guilds[msg.guild.id];
 		msg.guild.player = msg.guild.s.player;
 	}
 
@@ -71,7 +70,9 @@ module.exports = class Self extends EventEmitter { // Todo: convert object to Ma
 		await this.logined;
 		const ids = this.client.guilds.keyArray();
 		for(let i = 0; i < ids.length; i++) {
-			this.guilds[ids[i]] = { player: new MusicPlayer(this), reactions: {}, muteJobs: {} };
+			const guild = this.client.guilds.get(ids[i]);
+			guild.player = new MusicPlayer(this);
+			this.guilds[ids[i]] = guild.s = { player: guild.player, reactions: {}, muteJobs: {} };
 		}
 	}
 	
