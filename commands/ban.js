@@ -16,8 +16,7 @@ module.exports = class Ban extends Command {
 	async run(msg, params, reply) {
 		const mention = params.shift(),
 			reason = params.join(" "),
-			user = await this.helpers.fetchUser(mention, msg.guild),
-			role = 
+			user = await this.helpers.fetchUser(mention, msg.guild)
 		if(!user)reply.throw("Invalid discord user.");
 		const [p1, banInfo] = await Promise.all([ 
 			msg.guild.ban(user, { reason }),
