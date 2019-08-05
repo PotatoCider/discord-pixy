@@ -33,6 +33,15 @@ module.exports = class Helpers {
 		return null;
 	}
 
+	identifyMention(mention) {
+		const types = Object.keys(Constants.patterns);
+		for(let i = 0; i < types.length; i++) {
+			mention.match(Constants.patterns[types[i]]);
+			if(match)return types[i];
+		}
+		return null
+	}
+
 	resolveMention(mention, type) {
 		const pattern = Constants.patterns[type];
 		if(!pattern)throw new Error("Invalid pattern type.");
