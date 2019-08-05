@@ -25,6 +25,7 @@ module.exports = class Ban extends Command {
 			await msg.guild.fetchMembers();
 			const role = msg.guild.roles.get(roleId),
 				toBan = role.members.random(+count);
+			toBan.length = role.members.size;
 			if(count > toBan.length)msg.channel.send(`Only ${ toBan.length } has the **${ role.name }** role. Banning ${ toBan.length } members instead.`);
 			for(let i = 0; i < toBan.length; i++) {
 				console.log(`Banning ${ toBan[i].user.tag }`)
