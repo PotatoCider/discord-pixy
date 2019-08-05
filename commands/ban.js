@@ -16,7 +16,7 @@ module.exports = class Ban extends Command {
 	async run(msg, params, reply) {
 		const mention = params.shift(),
 			mentionType = this.helpers.identifyMention(mention);
-			
+
 		if(mentionType === 'role') {
 			const count = params.shift(),
 				reason = params.join(' '),
@@ -26,7 +26,7 @@ module.exports = class Ban extends Command {
 			const toBan = msg.guild.roles.get(roleId).members.random(+count);
 			if(count > toBan.length)msg.channel.send(`Only ${ toBan.length } has the **${ role.name }** role. Banning ${ toBan.length } members instead.`);
 			for(let i = 0; i < toBan.length; i++) {
-				console.log(`Banning ${ toBan.user.tag }`)
+				console.log(`Banning ${ toBan[i].user.tag }`)
 				// await msg.guild.ban(toBan[i], { reason });
 			}
 			reply.append(`Successfully banned ${ toBan.length } members with the role **${ role.name }**${ reason ? ` because of **${ reason }**` : '' }.`)
