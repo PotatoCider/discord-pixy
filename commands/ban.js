@@ -30,7 +30,7 @@ module.exports = class Ban extends Command {
 				console.log(`Banning ${ toBan[i].user.tag }`)
 				// await msg.guild.ban(toBan[i], { reason });
 			}
-			reply.append(`Successfully banned ${ toBan.length } member${ toBan.length > 1 ? : 's' : '' } with the role **${ role.name }**${ reason ? ` because of **${ reason }**` : '' }.`)
+			reply.append(`Successfully banned ${ toBan.length } member${ toBan.length > 1 ? 's' : '' } with the role **${ role.name }**${ reason ? ` because of **${ reason }**` : '' }.`)
 		} else {
 			const reason = params.join(" "),
 				user = await this.helpers.fetchUser(mention);
