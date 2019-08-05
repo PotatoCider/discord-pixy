@@ -36,7 +36,7 @@ module.exports = class Helpers {
 	identifyMention(mention) {
 		const types = Object.keys(Constants.patterns);
 		for(let i = 0; i < types.length; i++) {
-			mention.match(Constants.patterns[types[i]]);
+			const match = mention.match(Constants.patterns[types[i]]);
 			if(match)return types[i];
 		}
 		return null
