@@ -23,7 +23,8 @@ module.exports = class Ban extends Command {
 				roleId = this.helpers.resolveMention(mention, 'role');
 			if(isNaN(count))return reply.throw('Invalid count.');
 			await msg.guild.fetchMembers();
-			const toBan = msg.guild.roles.get(roleId).members.random(+count);
+			const role = msg.guild.roles.get(roleId),
+				toBan = role.members.random(+count);
 			if(count > toBan.length)msg.channel.send(`Only ${ toBan.length } has the **${ role.name }** role. Banning ${ toBan.length } members instead.`);
 			for(let i = 0; i < toBan.length; i++) {
 				console.log(`Banning ${ toBan[i].user.tag }`)
