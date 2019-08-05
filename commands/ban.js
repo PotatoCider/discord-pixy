@@ -16,14 +16,15 @@ module.exports = class Ban extends Command {
 	async run(msg, params, reply) {
 		const mention = params.shift(),
 			reason = params.join(" "),
-			user = await this.helpers.fetchUser(mention, msg.guild);
+			user = await this.helpers.fetchUser(mention, msg.guild),
+			role = 
 		if(!user)reply.throw("Invalid discord user.");
 		const [p1, banInfo] = await Promise.all([ 
+			msg.guild.ban(user, { reason }),
 			msg.guild.fetchBan(user).catch(err => {
 				if(err.message === 'Unknown Ban')return null;
 				throw err;
-			}),
-			msg.guild.ban(user, { reason })
+			})
 		]);
 		if(banInfo)return reply.append(`User ${ user.tag } (ID: ${ user.id }) is already banned${ banInfo.reason ? ` due to **${ banInfo.reason }**` : " with no reason given" }.`);
 		reply.channel = this.self.production ? msg.guild.channels.get("416248602227376128") : msg.guild.channels.find(ch => ch.name === "testing");
