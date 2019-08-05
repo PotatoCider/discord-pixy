@@ -26,10 +26,9 @@ module.exports = class Ban extends Command {
 			const role = msg.guild.roles.get(roleId),
 				toBan = role.members.random(+count);
 			toBan.length = role.members.size;
-			if(count > toBan.length)msg.channel.send(`Only ${ toBan.length } has the **${ role.name }** role. Banning ${ toBan.length } members instead.`);
+			if(count > toBan.length)msg.channel.send(`Only ${ toBan.length } members has the **${ role.name }** role. Banning ${ toBan.length } members instead.`);
 			for(let i = 0; i < toBan.length; i++) {
-				console.log(`Banning ${ toBan[i].user.tag }`)
-				// await msg.guild.ban(toBan[i], { reason });
+				await msg.guild.ban(toBan[i], { reason });
 			}
 			reply.append(`Successfully banned ${ toBan.length } member${ toBan.length > 1 ? 's' : '' } with the role **${ role.name }**${ reason ? ` because of **${ reason }**` : '' }.`)
 		} else {
