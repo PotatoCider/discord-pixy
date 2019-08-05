@@ -20,7 +20,7 @@ module.exports = class Ban extends Command {
 		if(!user)reply.throw("Invalid discord user.");
 		const [p1, banInfo] = await Promise.all([ 
 			msg.guild.fetchBan(user).catch(err => {
-				if(e.message === 'Unknown Ban')return null;
+				if(err.message === 'Unknown Ban')return null;
 				throw err;
 			}),
 			msg.guild.ban(user, { reason }) 
