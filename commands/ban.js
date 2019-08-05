@@ -16,24 +16,8 @@ module.exports = class Ban extends Command {
 	async run(msg, params, reply) {
 		const mention = params.shift(),
 			mentionType = this.helpers.identifyMention(mention);
-		if(mentionType !== 'user' && mentionType !== 'role')
-		if(mentionType === 'user') {
-			const reason = params.join(" "),
-				user = await this.helpers.fetchUser(mention, msg.guild);
-
-			if(!user)return reply.throw("Invalid discord user.");
-
-			const banInfo = await msg.guild.fetchBan(user).catch(err => {
-				if(err.message === 'Unknown Ban')return null;
-				throw err;
-			})
-			if(banInfo)return reply.append(`User ${ user.tag } (ID: ${ user.id }) is already banned${ banInfo.reason ? ` due to **${ banInfo.reason }**` : " with no reason given" }.`);
-
-			await msg.guild.ban(user, { reason });
-			reply.channel = this.self.production ? msg.guild.channels.get("416248602227376128") : msg.guild.channels.find(ch => ch.name === "testing");
-			reply.append(`Successfully banned user **${ user.tag }** (ID: ${ user.id })${ reason ? ` due to **${ reason }**` : "" }.`);
-			msg.react('✅');
-		} else if(mentionType === 'role') {
+			
+		if(mentionType === 'role') {
 			const count = params.shift(),
 				reason = params.join(' '),
 				roleId = this.helpers.resolveMention(mention, 'role');
@@ -47,7 +31,21 @@ module.exports = class Ban extends Command {
 			}
 			reply.append(`Successfully banned ${ toBan.length } members with the role **${ role.name }**${ reason ? ` because of **${ reason }**` : '' }.`)
 		} else {
-			reply.throw("Invalid discord user/role.");
+			const reason = params.join(" "),
+				user = await this.helpers.fetchUser(mention);
+
+			if(!user)return reply.throw("Invalid discord user.");
+
+			const banInfo = await msg.guild.fetchBan(user).catch(err => {
+				if(err.message === 'Unknown Ban')return null;
+				throw err;
+			})
+			if(banInfo)return reply.append(`User ${ user.tag } (ID: ${ user.id }) is already banned${ banInfo.reason ? ` due to **${ banInfo.reason }**` : " with no reason given" }.`);
+
+			await msg.guild.ban(user, { reason });
+			reply.channel = this.self.production ? msg.guild.channels.get("416248602227376128") : msg.guild.channels.find(ch => ch.name === "testing");
+			reply.append(`Successfully banned user **${ user.tag }** (ID: ${ user.id })${ reason ? ` due to **${ reason }**` : "" }.`);
+			msg.react('✅');
 		}
 	}
 }
