@@ -25,8 +25,8 @@ module.exports = class Ban extends Command {
 			}),
 			msg.guild.ban(user, { reason }) 
 		]);
+		if(banInfo)return reply.append(`User ${ user.tag } (ID: ${ user.id }) is already banned${ banInfo.reason ? ` due to **${ banInfo.reason }**` : " with no reason given" }.`);
 		reply.channel = this.self.production ? msg.guild.channels.get("416248602227376128") : msg.guild.channels.find(ch => ch.name === "testing");
-		if(banInfo)return reply.append(`User ${ user.tag } (ID: ${ user.id }) is ${ banInfo.reason ? ` due to **${ banInfo.reason }**` : "" }.`);
 		reply.append(`Successfully banned user ${ user.tag } (ID: ${ user.id }) ${ reason ? ` due to **${ reason }**` : "" }.`);
 	}
 }
