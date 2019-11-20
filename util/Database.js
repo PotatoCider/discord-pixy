@@ -30,7 +30,6 @@ module.exports = class Database {
 		this.db = this.client.db(this.dbName);
 		this.users = this.db.collection("users");
 		this.guilds = this.db.collection("guilds");
-
 		this.guildSync = this.syncGuilds();
 		return this;
 	}
