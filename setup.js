@@ -8,7 +8,7 @@ try {
 	process.env.TOKEN = token;
 	process.env.MONGODB_URI = mongodb_path;
 	process.env.YT_API_KEY = yt_api_key;
-	process.env.PRODUCTION = production === 'TRUE' ? true : false;
+	process.env.PRODUCTION = production.toLowerCase() === 'true' ? true : false;
 } catch(err) {
 	if(err.message !== "Cannot find module './config.json'")throw err;
 } finally {
