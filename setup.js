@@ -3,11 +3,12 @@ process.on("unhandledRejection", errorHandler)
 .on("uncaughtException", errorHandler);
 
 try {
-	const { prefix, token, mongodb_path, yt_api_key } = require("./config.json");
+	const { prefix, token, mongodb_path, yt_api_key, production } = require("./config.json");
 	process.env.PREFIX = prefix;
 	process.env.TOKEN = token;
 	process.env.MONGODB_URI = mongodb_path;
 	process.env.YT_API_KEY = yt_api_key;
+	process.env.PRODUCTION = production === 'TRUE' ? true : false;
 } catch(err) {
 	if(err.message !== "Cannot find module './config.json'")throw err;
 } finally {
