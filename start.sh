@@ -1,4 +1,5 @@
 #!/bin/bash
-cd /home/pi/projects/discord-pixy
+cd $PWD
+
 echo "***** Bot Restarted *****" >> bot.log
 node bot.js >> bot.log &
