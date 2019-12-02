@@ -26,7 +26,7 @@ module.exports = class Database {
 	}
 
 	async connect() {
-		this.client = await mongo.connect(this.url, { useNewUrlParser: true }).catch(err => console.log(err));
+		this.client = await mongo.connect(this.url, { useNewUrlParser: true, useUnifiedTopology: true }).catch(err => console.log(err));
 		this.db = this.client.db(this.dbName);
 		this.users = this.db.collection("users");
 		this.guilds = this.db.collection("guilds");
