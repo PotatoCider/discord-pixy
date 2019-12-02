@@ -72,13 +72,14 @@ module.exports = class Message {
 	async send(channel) {
 		this.channel = channel || this.channel;
 		if(!this.channel)throw new Error("No channel specified.");
+		if(this.sent)console.warn('sent message 2 times');
 		this.sent = true;
 		this.next = this.new;
 		
 		let resolve;
 		this.sending = new Promise(res => resolve = res);
 		const msg = await this.channel.send(this.content, this.options);
-
+			
 		if(!isNaN(this.del)) {
 			msg.delete(this.del);
 			msg.deleted = true;

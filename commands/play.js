@@ -56,6 +56,7 @@ module.exports = class Play extends Command {
 	}
 
 	async selection(items, msg, reply) {
+		reply = reply.new;
 		reply.setEmbed({
 			title: `Reply with a song number "1-${ items.length }". Reply "cancel" to cancel selection.`,
 			author: msg.member,
