@@ -20,7 +20,8 @@ module.exports = class Help extends Command {
 			for(const name in this.self.commands) {
 				const command = this.self.commands[name];
 				if(command.ignore)continue;
-				if(typeof command.help !== "function")console.log(command);
+				if(command.aliases.includes(name))continue;
+			//	if(typeof command.help !== "function")console.log(command);
 				reply.append(command.help());
 			}
 			await reply.send(msg.member);
