@@ -28,6 +28,7 @@ module.exports = class Play extends Command {
 
 	async getVideoFromQuery(msg, query, reply) {
 		let selected;
+		reply = reply.new;
 		if(!this.utils.ytdl.validateURL(query)) {
 			reply.collect(m => m.content >= 1 && m.content <= 5 || m.content === "cancel", 35);
 
@@ -56,7 +57,6 @@ module.exports = class Play extends Command {
 	}
 
 	async selection(items, msg, reply) {
-		reply = reply.new;
 		reply.setEmbed({
 			title: `Reply with a song number "1-${ items.length }". Reply "cancel" to cancel selection.`,
 			author: msg.member,
